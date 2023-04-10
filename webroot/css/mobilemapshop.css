@@ -1,0 +1,22 @@
+.carousel {
+  height: 200px;
+  width: 200px;
+}
+
+.carousel-item,
+.carousel-inner,
+.carousel-inner img {
+  height: auto;
+  width: auto;
+}
+
+.carousel-item {
+  text-align: center;
+}
+
+#portfolio {
+  background: #356;
+}
+
+
+

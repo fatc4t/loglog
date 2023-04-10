@@ -1,0 +1,26 @@
+body{
+    height: 200px;
+}
+
+
+img{
+    top: 0px;
+    width: 100%;
+}
+
+
+h1{
+
+    display: inline-block;
+    position: relative;
+    bottom: 0px;
+    text-align: right;
+}
+
+
+hr {
+    color: red;
+    background: rgb(233, 2, 2);
+    width: 100%;
+    height: 10px;
+}
