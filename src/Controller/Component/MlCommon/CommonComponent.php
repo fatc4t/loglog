@@ -669,7 +669,7 @@ class CommonComponent
 
         return $point;
     }
-        /**
+    /**
      * getVisitConditions method.【 来店条件 】------- K 23/03
      *
      * @return void
@@ -736,7 +736,7 @@ class CommonComponent
         $query = $connection->query($sql)->fetchAll('assoc');
 
 
-       return $query;
+        return $query;
     }
 
     /*
@@ -1078,7 +1078,7 @@ class CommonComponent
             $sql   = "";
             $sql .=  " 
             SELECT R.room_id, 
-            TO_CHAR((SELECT datesent FROM messages WHERE user_cd='".$user_cd."' and messages.room_id=R.room_id ORDER BY datesent DESC limit 1   ), 'YYYY-MM-DD HH24:MI') AS datesent,
+            TO_CHAR((SELECT datesent FROM messages WHERE user_cd='" . $user_cd . "' and messages.room_id=R.room_id ORDER BY datesent DESC limit 1   ), 'YYYY-MM-DD HH24:MI') AS datesent,
             S.shop_nm, 
            R.shop_cd, 
             R.user_cd, S.shop_postcd, S.shop_add1, S.shop_add2, S.shop_add3, 
@@ -1086,9 +1086,9 @@ class CommonComponent
            S.thumbnail1, S.thumbnail2, S.thumbnail3, S.goods, S.paidmember, S.holiday1, S.holiday2, S.holiday3, S.free_text 
             FROM rooms R
             LEFT JOIN mst0010 S on R.shop_cd = S.shop_cd
-            where R.user_cd='".$user_cd."' 
+            where R.user_cd='" . $user_cd . "' 
             and 
-            (SELECT datesent FROM messages WHERE user_cd='".$user_cd."' and messages.room_id=R.room_id ORDER BY datesent DESC limit 1   ) is not NULL
+            (SELECT datesent FROM messages WHERE user_cd='" . $user_cd . "' and messages.room_id=R.room_id ORDER BY datesent DESC limit 1   ) is not NULL
             order by datesent desc";
 
 
@@ -1328,7 +1328,6 @@ class CommonComponent
             //print_r("-----createRoomNewUsers");exit;
             // SQLの実行
             $connection->query($sqlInsert)->fetchAll('assoc');
-
         } catch (Exception $e) {
             $this->Flash->error($e);
             $connection->rollback();
@@ -1375,16 +1374,16 @@ class CommonComponent
         $sql   = "";
         $sql   .= " INSERT INTO geolocations (shop_cd, longtitude, latitude, address)  
         VALUES (
-        '".$shop_cd."', 
-        '".$long."', 
-        '".$lat."', 
-        '".$fullShopAddr."')";
- 
+        '" . $shop_cd . "', 
+        '" . $long . "', 
+        '" . $lat . "', 
+        '" . $fullShopAddr . "')";
+
         // SQLの実行
         $connection->query($sql)->fetchAll('assoc');
     }
 
-     /**
+    /**
      * UPDATE method.【 クーポン側 更新 】　COUPON - EDIT
      * KARL 2023/03
      * @return void
@@ -1404,10 +1403,10 @@ class CommonComponent
         }
 
         //  $connection->begin();
-        
+
         try {
             // UPDATE 
-            $sql2 ="";
+            $sql2 = "";
             $sql2 = " UPDATE public." . $table . " SET ";
             $sql2 .= "updatetime            = now(), ";
             $sql2 .= "age                   ='" . $searchParam['age'] . "', ";
@@ -1428,7 +1427,7 @@ class CommonComponent
 
             $sql2 .= " " . $where . " ";
 
-            
+
 
             $connection->query($sql2)->fetchAll('assoc');
         } catch (Exception $e) {
@@ -1456,7 +1455,7 @@ class CommonComponent
         //  $connection->begin();
         try {
             $sql = "";
-            if($paidMemberCheck == 0){ //--not paid member
+            if ($paidMemberCheck == 0) { //--not paid member
                 $sql .= " INSERT INTO public." . $table . " 
                 (
                 insuser_cd,
@@ -1484,37 +1483,36 @@ class CommonComponent
                 visit_condition
                 ) 
                 VALUES (
-                    '".$searchParam['insuser_cd']."',
-                    '".$searchParam['insdatetime']."',
-                    '".$searchParam['upduser_cd']."',
-                    '".$searchParam['updatetime']."',
-                    '".$searchParam['shop_cd']."',
-                    '".$searchParam['coupon_cd']."',
-                    '".$searchParam['coupon_goods']."', 
-                    '".$searchParam['effect_srt']."',
-                    '".$searchParam['effect_end']."',
-                    '".$searchParam['coupon_discount']."', 
-                    '".$searchParam['thumbnail1']."',
-                    '".$searchParam['thumbnail2']."',
-                    '".$searchParam['thumbnail3']."',
-                    '".$searchParam['user_cd']."',
-                    '".$searchParam['connect_kbn']."',
-                    '".$searchParam['used']."',
-                    '".$searchParam['background']."',
-                    '".$searchParam['color']."',
-                    '".$searchParam['prefecture']."', 
-                    '".$searchParam['age']."', 
-                    '".$searchParam['gender']."',
-                    '".$searchParam['birthday']."',
-                    '".$searchParam['visit_condition']."'
+                    '" . $searchParam['insuser_cd'] . "',
+                    '" . $searchParam['insdatetime'] . "',
+                    '" . $searchParam['upduser_cd'] . "',
+                    '" . $searchParam['updatetime'] . "',
+                    '" . $searchParam['shop_cd'] . "',
+                    '" . $searchParam['coupon_cd'] . "',
+                    '" . $searchParam['coupon_goods'] . "', 
+                    '" . $searchParam['effect_srt'] . "',
+                    '" . $searchParam['effect_end'] . "',
+                    '" . $searchParam['coupon_discount'] . "', 
+                    '" . $searchParam['thumbnail1'] . "',
+                    '" . $searchParam['thumbnail2'] . "',
+                    '" . $searchParam['thumbnail3'] . "',
+                    '" . $searchParam['user_cd'] . "',
+                    '" . $searchParam['connect_kbn'] . "',
+                    '" . $searchParam['used'] . "',
+                    '" . $searchParam['background'] . "',
+                    '" . $searchParam['color'] . "',
+                    '" . $searchParam['prefecture'] . "', 
+                    '" . $searchParam['age'] . "', 
+                    '" . $searchParam['gender'] . "',
+                    '" . $searchParam['birthday'] . "',
+                    '" . $searchParam['visit_condition'] . "'
                     )";
 
 
 
                 $connection->query($sql)->fetchAll('assoc');
-
-            }else{ //-- paid member
-                $sql .= " INSERT into public." . $table. "
+            } else { //-- paid member
+                $sql .= " INSERT into public." . $table . "
                 (
                     insuser_cd,
                     insdatetime,
@@ -1542,34 +1540,33 @@ class CommonComponent
                     visit_condition
                     ) 
                     VALUES (
-                        '".$searchParam['insuser_cd']."',
-                        '".$searchParam['insdatetime']."',
-                        '".$searchParam['upduser_cd']."',
-                        '".$searchParam['updatetime']."',
-                        '".$searchParam['shop_cd']."',
-                        '".$searchParam['coupon_cd']."',
-                        '".$searchParam['coupon_goods']."', 
-                        '".$searchParam['effect_srt']."',
-                        '".$searchParam['effect_end']."',
-                        '".$searchParam['coupon_discount']."', 
-                        '".$searchParam['thumbnail1']."',
-                        '".$searchParam['thumbnail2']."',
-                        '".$searchParam['thumbnail3']."',
-                        '".$searchParam['user_cd']."',
-                        '".$searchParam['connect_kbn']."',
-                        '".$searchParam['used']."',
-                        '".$searchParam['background']."',
-                        '".$searchParam['color']."',
-                        '".$searchParam['prefecture']."', 
-                        '".$searchParam['age']."', 
-                        '".$searchParam['gender']."',
-                        '".$searchParam['birthday']."',
-                        '".$searchParam['rank']."',
-                        '".$searchParam['visit_condition']."'
+                        '" . $searchParam['insuser_cd'] . "',
+                        '" . $searchParam['insdatetime'] . "',
+                        '" . $searchParam['upduser_cd'] . "',
+                        '" . $searchParam['updatetime'] . "',
+                        '" . $searchParam['shop_cd'] . "',
+                        '" . $searchParam['coupon_cd'] . "',
+                        '" . $searchParam['coupon_goods'] . "', 
+                        '" . $searchParam['effect_srt'] . "',
+                        '" . $searchParam['effect_end'] . "',
+                        '" . $searchParam['coupon_discount'] . "', 
+                        '" . $searchParam['thumbnail1'] . "',
+                        '" . $searchParam['thumbnail2'] . "',
+                        '" . $searchParam['thumbnail3'] . "',
+                        '" . $searchParam['user_cd'] . "',
+                        '" . $searchParam['connect_kbn'] . "',
+                        '" . $searchParam['used'] . "',
+                        '" . $searchParam['background'] . "',
+                        '" . $searchParam['color'] . "',
+                        '" . $searchParam['prefecture'] . "', 
+                        '" . $searchParam['age'] . "', 
+                        '" . $searchParam['gender'] . "',
+                        '" . $searchParam['birthday'] . "',
+                        '" . $searchParam['rank'] . "',
+                        '" . $searchParam['visit_condition'] . "'
                         )";
 
-                    $connection->query($sql)->fetchAll('assoc');                    
-
+                $connection->query($sql)->fetchAll('assoc');
             }
         } catch (Exception $e) {
             $this->Flash->error($e);
@@ -1577,24 +1574,7 @@ class CommonComponent
         }
     }
 
-    /*
-    * GET mst0011 nextval USER_CD K(2023/03)
-    */
-    public static function getCurrentUserCd()
-    {
 
-        $connection = ConnectionManager::get('default');
-
-
-        //get nextval of sequence of user_cd in mst0011
-        $sql   = "";
-        $sql   .= " SELECT nextval('importusers_user_cd_seq');";
- 
-        // SQLの実行
-        $currVal = $connection->query($sql)->fetchAll('assoc');
-
-        return $currVal;
-    }
 
     /**
      * 新規登録モバイル側
@@ -1620,33 +1600,31 @@ class CommonComponent
             // 登録
             $sql = "";
             $sql .= " INSERT into public." . $table . " 
-            (insuser_cd,
-            insdatetime,
-            upduser_cd,
+            (           
+            insdatetime,    
             updatetime,
             user_nm,
             user_pw,
             user_phone,
             connect_kbn)
             VaLUES
-            (
-            '".$searchParam['insuser_cd']."',
+            (    
             now(),
-            '".$searchParam['upduser_cd']."',
             now(),
-            '".$searchParam['user_nm']."',
-            '".$searchParam['user_pw']."',
-            '".$searchParam['user_phone']."',
+            '" . $searchParam['user_nm'] . "',
+            '" . $searchParam['user_pw'] . "',
+            '" . $searchParam['user_phone'] . "',
             '0'
-            )";
+            )
+            RETURNING user_cd
+            ";
 
-            $connection->query($sql)->fetchAll('assoc');
-            
+            $user_cd = $connection->query($sql)->fetchAll('assoc'); //RETURN SEQUENCE user_cd
+
+            return $user_cd;
         } catch (Exception $e) {
             $this->Flash->error($e);
             $connection->rollback();
         }
     }
-
 }
-   

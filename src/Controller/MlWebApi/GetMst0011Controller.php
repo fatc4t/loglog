@@ -50,6 +50,8 @@
 
             // パラメータを取得
             $body = $this->request->getQuery('param');
+
+           
             
             //　パラメータなしの時はエラー
             if (is_null($body)) {
@@ -67,6 +69,8 @@
                 echo "JSON error";
                 exit();
             }
+
+            //print_r($json[0]['user_phone']);exit;
             
             // データがある時
             if($json){
@@ -81,27 +85,14 @@
                 //電話番号に重複があった時          
                 if($user_data){
                     // メッセージ表示テスト用
-                    $json_array[] =  array(
-                        'already_have' 
-                    );
+                    $json_array[] =  "already_have";
                 }else{
                     
-                    // 最大の顧客コードを読込み 
-                    //$result = $common->prGetMaxValue('user_cd','mst0011'); 
 
-                    //　結果に+1する
-                    //$maxValue = sprintf("%08d", $result[0]['max']+1); //LMAOOOOOOOOOO manual
-
-                    //Get current user number here
-                    $currUser_cd= $common->getCurrentUserCd();
-                    
-                
                     foreach($json as $val){
 
                         $searchParam = [];
-                        $searchParam['insuser_cd']  = $currUser_cd;
                         $searchParam['insdatetime'] = 'now() ';
-                        $searchParam['upduser_cd']  = $currUser_cd;
                         $searchParam['updatetime']  = 'now() '; 
                         $searchParam['user_nm']  = $val['user_nm'];  
                         //user_cd シーケンスがあるのでこれはいらないわけだ
@@ -111,21 +102,22 @@
 
 
                         //save to Database
-                        $common->saveRegistered('mst0011',$searchParam);
+                        $user_cdSequence = $common->saveRegistered('mst0011',$searchParam); //SEQUENCE の現在地
+
+                      
                     }
                   
 
                     // メッセージ表示テスト用
                     $json_array[] =  array(
-                        'user_cd'       => $currUser_cd,
+                        'user_cd'       => $user_cdSequence[0]['user_cd'],
                     );
 
                 }
             }else{
                 // メッセージ表示テスト用
-                    $json_array[] =  array(
-                        'user_data'       => 0,
-                    );
+                    $json_array[] =  "not_support";
+                    
             }
 
             $this->set(compact('json_array'));
