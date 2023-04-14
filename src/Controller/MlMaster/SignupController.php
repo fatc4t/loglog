@@ -58,6 +58,8 @@ class SignupController extends AppController
         $common = new CommonComponent();
 
         $path        = "";
+        $cardLogoPath = CON_IMAGE_Logo.$shop_cd;    //('../webroot/img/CardLogo/')
+
         $pic_nm      = [];
 
         // urlから店舗コードを取得する
@@ -138,6 +140,11 @@ class SignupController extends AppController
         $point = $common->prGetpoint();
         $this->set(compact('point'));
 
+        //K (2023/04)
+        //barcode 区分------------------------------------------------
+        $barcode_kbns = $common->barcodeList();
+        $this->set(compact('barcode_kbns'));
+
         //画面からpostされたときのみ処理する 
         if ($this->getRequest()->is('post')) {
 
@@ -157,11 +164,14 @@ class SignupController extends AppController
                 $path = CON_IMAGE . $shop_cd1;
 
                 $myFiles = $this->request->getData('my_file');
+                $myFiles_logo = $this->request->getData('logo');           //カードロゴ
                 $pic_nm  = $common->prSavePic($path, $myFiles);
+                $pic_nm_cardLogo = $common->saveCardLogo($cardLogoPath, $myFiles_logo);    //card logo
 
                 $searchParam['thumbnail1'] = '';
                 $searchParam['thumbnail2'] = '';
                 $searchParam['thumbnail3'] = '';
+                $searchParam['logo']       = "";    //店舗カード LOGO
 
                 if ($pic_nm[0] != "") {
                     $j = 1;
@@ -183,6 +193,14 @@ class SignupController extends AppController
                         unlink($file3);
                     }
                 }
+
+                //----CARD LOGO K(2023/04)
+                if ($pic_nm_cardLogo[0] !== "" && $pic_nm_cardLogo[0] !== null) {
+                    $searchParam['logo']       = $pic_nm_cardLogo;
+                }
+
+
+
                 $searchParam['insuser_cd']   = $shop_cd1;
                 $searchParam['insdatetime']  = $shop_data[0]['insdatetime'];
                 $searchParam['upduser_cd']   = $shop_cd1;
@@ -193,6 +211,15 @@ class SignupController extends AppController
                 $searchParam['shop_group_cd']       = "";
                 $searchParam['special_point_cd']    = "";
                 $searchParam['card_image']          = "";
+                $searchParam['bar_schar']           = "";
+             
+
+                //バーコード区分 SET コード -----------KARL
+                //1:JAN13 2:JAN8 3:NW7 4:Code 39 5:Code 128
+                $barcodeCODE = $common->convertBarcodeCode($searchParam['barcode_kbn']);
+                $searchParam['barcode_kbn'] = $barcodeCODE;
+
+               
 
                 //　登録する
                 $common->prSavedata("mst0010", $searchParam); //<---- this is fucked up
@@ -202,6 +229,7 @@ class SignupController extends AppController
                 $add1 = $searchParam['shop_add1'];
                 $add2 = $searchParam['shop_add2'];
                 $add3 = $searchParam['shop_add3'];
+                //-------------------------------------------------------------------------------------------------
                 $this->geolocationMake($shop_cd1, $add1, $add2, $add3);
 
                 //home 画面へパラメータを持って移動する                    

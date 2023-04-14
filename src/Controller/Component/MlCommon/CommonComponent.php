@@ -272,7 +272,7 @@ class CommonComponent
 
 
     /**
-     * Card image save method.【 写真保存 】
+     * Card image save method.【 写真保存 】 -----K(2023/02)
      *
      * @return void
      */
@@ -286,22 +286,10 @@ class CommonComponent
             mkdir($path, 0777, true);
         }
         $files = $_FILES['my_card']['tmp_name']; //+ $_FILES['my_file_Pro']['tmp_name'];
-        //$profilePic_tmp = $_FILES['my_file_Pro']['tmp_name'];
-        //array_push($files, $profilePic_tmp[0]);
+
 
         $file_name = $_FILES['my_card']['name'];
-        //$profilePic_name = $_FILES['my_file_Pro']['name'];
-        //array_push($file_name, $profilePic_name[0]);
 
-
-        // if($_FILES['my_file']['tmp_name']){
-        //     print_r("my_file");
-        // }
-        // if($_FILES['my_file_Pro']['tmp_name']){
-        //     print_r("my_file_Pro");
-        // }
-
-        //print_r($myFiles); exit;
 
         $path1     = $path . '/';
 
@@ -340,6 +328,64 @@ class CommonComponent
 
         return $pic_nm;
     }
+
+     /**
+     * Card LOGO save method.【 写真保存 】 -----K(2023/04)
+     *
+     * @return void
+     */
+
+     public static  function saveCardLogo($path = NULL, $myFiles = NULL)
+     {
+ 
+         $pic_nm = [];
+         // お店の写真を保存するためにフォルダーを作成する
+         if (!file_exists($path)) {
+             mkdir($path, 0777, true);
+         }
+         $files = $_FILES['logo']['tmp_name']; 
+ 
+ 
+         $file_name = $_FILES['logo']['name'];
+ 
+ 
+         $path1     = $path . '/';
+ 
+         $j = 0;
+ 
+         // ファイルがアップロードされているかの判定
+         if ($files) {
+ 
+             list($width, $height) = getimagesize($files);
+ 
+             // 縦横のリサイズ後のピクセル数を求める
+             if ($width > $height) {
+                 $ratio = 300 / $width;
+             } else {
+                 $ratio = 300 / $height;
+             }
+ 
+             $nwidth  = (int)($width * $ratio);
+             $nheight = (int)($height * $ratio);
+             $newimage = imagecreatetruecolor($nwidth, $nheight);
+ 
+             // JPEG, PNG, GIF, BMP, WBMP, GD2 をサポートするようビルドされている場合、 イメージの種類は自動的に判別される
+             $source = imagecreatefromstring(file_get_contents($files));
+             imagecopyresized($newimage, $source, 0, 0, 0, 0, $nwidth, $nheight, $width, $height);
+             imagejpeg($newimage, $path1 . $file_name, 30);
+ 
+ 
+             
+ 
+             // アップロードしたファイルを $path1 に保存
+             $pic_nm = $myFiles->getClientFilename();
+         } else {
+             $pic_nm = "";
+         }
+         $j++;
+ 
+         return $pic_nm;
+     }
 
     /**
      * prDeletedata method.【 削除 】
@@ -460,17 +506,17 @@ class CommonComponent
             if ($searchParam['thumbnail3'] !== "") {
                 $sql2 .= "thumbnail3          ='" . $searchParam['thumbnail3'] . "', ";
             }
-            //----card iamge
-            $sql2 .= "card_image          ='" . $searchParam['card_image'] . "', ";
-            $sql2 .= "holiday1            ='" . $searchParam['holiday1'] . "', ";
-            $sql2 .= "holiday2            ='" . $searchParam['holiday2'] . "', ";
-            $sql2 .= "holiday3            ='" . $searchParam['holiday3'] . "', ";
-            $sql2 .= "free_text           ='" . $searchParam['free_text'] . "', ";
-
-            $sql2 .= "point           ='" . $searchParam['point'] . "', ";
-
-            $sql2 .= "special_point_cd           ='" . $searchParam['special_point_cd'] . "', ";
-            $sql2 .= "shop_group_cd       ='" . $searchParam['shop_group_cd'] . "' ";
+            //----card image
+            $sql2 .= "card_image            ='" . $searchParam['card_image'] . "', ";
+            $sql2 .= "holiday1              ='" . $searchParam['holiday1'] . "', ";
+            $sql2 .= "holiday2              ='" . $searchParam['holiday2'] . "', ";
+            $sql2 .= "holiday3              ='" . $searchParam['holiday3'] . "', ";
+            $sql2 .= "free_text             ='" . $searchParam['free_text'] . "', ";
+            $sql2 .= "point                 ='" . $searchParam['point'] . "', ";
+            $sql2 .= "special_point_cd      ='" . $searchParam['special_point_cd'] . "', ";
+            $sql2 .= "shop_group_cd         ='" . $searchParam['shop_group_cd'] . "', ";
+            $sql2 .= "barcode_kbn           ='" . $searchParam['barcodeType'] . "', ";      //
+            $sql2 .= "logo                  ='" . $searchParam['logo'] . "' ";              //card logo
 
             $sql2 .= " " . $where . " ";
 
@@ -658,7 +704,7 @@ class CommonComponent
     }
     /**
      * prGetpaidmembers method.【 ポイントカード対応 】
-     *
+     *  K(2023/03)
      * @return void
      */
     public static  function prGetpoint()
@@ -669,6 +715,69 @@ class CommonComponent
 
         return $point;
     }
+
+    /**
+     * barcodeList method.【バーコード区分 】
+     *  K(2023/04)
+     * @return void
+     */
+    public static  function barcodeList()
+    {
+        $barcodeType[0] = ['cd'  => '0', 'name' => 'JAN13',];
+        $barcodeType[1] = ['cd'  => '1', 'name' => 'JAN8',];
+        $barcodeType[2] = ['cd'  => '2', 'name' => 'NW7',];
+        $barcodeType[3] = ['cd'  => '3', 'name' => 'Code 38',];
+        $barcodeType[4] = ['cd'  => '4', 'name' => 'Code 128',];
+
+        // $barcodeType[0] = ['cd'  => '0', 'name' => 'Codabar',];
+        // $barcodeType[1] = ['cd'  => '1', 'name' => 'Code 39 Extended',];
+        // $barcodeType[2] = ['cd'  => '2', 'name' => 'Code 39',];
+        // $barcodeType[3] = ['cd'  => '3', 'name' => 'Code 93',];
+        // $barcodeType[4] = ['cd'  => '4', 'name' => 'Code 128',];
+        // $barcodeType[5] = ['cd'  => '5', 'name' => 'Code 128A',];
+        // $barcodeType[6] = ['cd'  => '6', 'name' => 'Code 128B',];
+        // $barcodeType[7] = ['cd'  => '7', 'name' => 'Code 128C',];
+        // $barcodeType[8] = ['cd'  => '8', 'name' => 'EAN-8',];
+        // $barcodeType[9] = ['cd'  => '9', 'name' => 'EAN-13',];
+        // $barcodeType[10] = ['cd'  => '10', 'name' => 'UPC-A',];
+        // $barcodeType[11] = ['cd'  => '11', 'name' => 'UPC-E',];
+
+
+        return $barcodeType;
+    }
+
+    /**
+     * barcode change to CODE.【バーコード区分 】
+     *  K(2023/04)
+     * @return void
+     */
+    public static  function convertBarcodeCode($code)
+    {
+
+        switch ($code) {
+            case "JAN13":
+                $convertCode = "1";
+                break;
+            case "JAN8":
+                $convertCode = "2";
+                break;
+            case "NW7":
+                $convertCode = "3";
+                break;
+            case "Code 38":
+                $convertCode = "4";
+                break;
+            case "Code 128":
+                $convertCode = "5";
+                break;
+            default:
+                $convertCode = "";
+        }
+
+        return $convertCode;
+    }
+
+
     /**
      * getVisitConditions method.【 来店条件 】------- K 23/03
      *

@@ -400,7 +400,35 @@
                     <?php } ?>
                 </select>
             </label>
-            <!-- ---------------------------------------------------------------------POINT CARD -->
+            
+            <br /><br />
+
+            <!-- --------------------- LOGO --------------------------- --> 
+            <label>&#x1f4f7;カードロゴ（※画像アップロードの容量上限：5MB）</label> <br />
+            <input id="myImage" name="logo" type="file" accept="image/*">
+
+            <br /><br />
+            
+            <!-- ---------------------------------------------------------------------BARCODE 区分 -->
+            <label class="fieldbox">
+                バーコード種類　:
+                <select name="barcodeType">
+                    <option></option>
+                    <?php
+                    foreach ($barcodeType as $data) {
+                        $selected = '';
+                        if ($data['name'] == $shop_data[0]['barcodeType']) {
+                            $selected = 'selected';
+                        } else {
+                            $selected = '""';
+                        }
+                    ?>
+                        <option value="<?= h($data['name']) ?>" <?= h($selected); ?>><?= h($data['name']) ?></option>
+                    <?php } ?>
+                </select>
+            </label><br />
+
+
             <br /><br />
 
             <label class="fieldbox">

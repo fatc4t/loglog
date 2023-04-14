@@ -75,9 +75,15 @@ class EditController extends AppController {
             $holiday = $common->prGetholidays();
             $this->set(compact('holiday'));
 
+            //K (2023/03)
              //fucking POINTSSSSSSSS--------------------------------1 or 0
              $point = $common->prGetpoint();
              $this->set(compact('point'));
+
+            //K (2023/04)
+            //barcode 区分------------------------------------------------
+            $barcodeType = $common->barcodeList();
+            $this->set(compact('barcodeType'));
 
             // DBより店舗の情報を取得する
             $shop_dataW = "shop_cd = '".$shop_cd."'";
@@ -97,51 +103,54 @@ class EditController extends AppController {
             if ($this->getRequest()->is('post')) {
                 
                 $searchParam =  $this->getRequest()->getData();
+
+                
                 $this->set(compact('searchParam')); 
 
-                //print_r();exit;
+                
                     
                 // 写真保存用のパスを設定する           
-                $path = CON_IMAGE.$shop_cd;
-                $path2 = CON_IMAGE_Card . $shop_cd;
-                //$path_Pro = CON_IMAGE_Profile.$shop_cd; //pp
+                $path = CON_IMAGE.$shop_cd;                 //('../webroot/img/Home/')
+                $path2 = CON_IMAGE_Card.$shop_cd;           //('../webroot/img/Card/')
+                $cardLogoPath = CON_IMAGE_Logo.$shop_cd;    //('../webroot/img/CardLogo/')
+                
 
                 $myFiles = $this->request->getData('my_file');
-                $myFiles_card = $this->request->getData('my_card');
-                //$myFiles_Pro = $this->request->getData('my_file_Pro'); //pp
+                $myFiles_card = $this->request->getData('my_card');             //カード画像
+                $myFiles_logo = $this->request->getData('logo');           //カードロゴ
+                
 
-                $pic_nm  = $common->prSavePic($path,$myFiles);
-                $pic_nm_card = $common->prSaveCardPic($path2, $myFiles_card);
-                //$pic_nm_Pro  = $common->prSavePic($path_Pro,$myFiles_Pro); //pp
+                $pic_nm  = $common->prSavePic($path,$myFiles);                              //thumbnail
+                $pic_nm_card = $common->prSaveCardPic($path2, $myFiles_card);               //card picture
+                $pic_nm_cardLogo = $common->saveCardLogo($cardLogoPath, $myFiles_logo);    //card logo
 
                 $searchParam['thumbnail1'] = "";
                 $searchParam['thumbnail2'] = "";
                 $searchParam['thumbnail3'] = "";
-                $searchParam['card_image'] = "";
+                $searchParam['card_image'] = "";    //point card image
+                $searchParam['logo']       = "";    //店舗カード LOGO
 
-                //$searchParam['profile_img'] = ""; //pp
                 
-                //fucking images
-                if($pic_nm[0] !== ""){
+                //if no PIC = string(0) ""
+
+                //------------------------------------------------THUMBNAIL
+                if($pic_nm[0] !== "" && $pic_nm[0]  !== null){
                     $j=1;
                     foreach($pic_nm as $val){
-                        if($val !== "" &&  $shop_data[0]['thumbnail'.$j] !== ""){
+                        if($shop_data[0]['thumbnail'.$j] !== "" && $shop_data[0]['thumbnail'.$j] !== null){
                             $searchParam['thumbnail'.$j] = $val;
                             unlink($path.'/'.$shop_data[0]['thumbnail'.$j]);
                         }else{
-                            $searchParam['thumbnail'.$j] = $val;
+                            $searchParam['thumbnail'.$j] = $shop_data[0]['thumbnail'.$j];
                         }
                         $j++;
                     }
                 }
-
-                
-
-                //---------card image CLEEEAAAAAAAAANNNNNNNNNNNNNNNNNNNNN
+                //---------card image (fucking clean)
                 if ($pic_nm_card !== "" && $pic_nm_card !== null) {
                     if ($shop_data[0]['card_image'] !== "") {
-                        $searchParam['card_image'] = $pic_nm_card;
                         unlink($path2 . '/' . $shop_data[0]['card_image']);
+                        $searchParam['card_image'] = $pic_nm_card;
                     } else {
                         $searchParam['card_image'] =$pic_nm_card;
                     }
@@ -150,6 +159,21 @@ class EditController extends AppController {
                     $searchParam['card_image'] = $shop_data[0]['card_image']; //上書きしないように overwrite NO
                 }
                 //---------card image
+
+
+                //-----------------------------------------------------------------card LOGO (fucking clean)
+                if ($pic_nm_cardLogo !== "" && $pic_nm_cardLogo !== null) {
+                    if ($shop_data[0]['logo'] !== "") {
+                        $searchParam['logo'] = $pic_nm_cardLogo;
+                        unlink($path2 . '/' . $shop_data[0]['logo']);
+                    } else {
+                        $searchParam['logo'] =$pic_nm_cardLogo;
+                    }
+                }else{
+                    //pic_nm_card is empty but DBデータがある
+                    $searchParam['logo'] = $shop_data[0]['logo']; //上書きしないように overwrite NO
+                }
+                //-----------------------------------------------------------------card LOGO
                 
             
                 // 画面上にないパラメータを準備する
@@ -192,12 +216,15 @@ class EditController extends AppController {
                 }
                
 
-                // 削除条件
-                $where = " shop_cd = '".$shop_cd."'";
-                // 削除
-                //$common->prDeletedata("mst0010",$where);
+                //バーコード区分 SET コード -----------KARL
+                //1:JAN13 2:JAN8 3:NW7 4:Code 39 5:Code 128
+                $barcodeCODE = $common->convertBarcodeCode($searchParam['barcodeType']);
+                $searchParam['barcodeType'] = $barcodeCODE;
                 
+                
+
                 //KARL UPDATE
+                $where = " shop_cd = '".$shop_cd."'";
                 $common->prUpdateEditdata("mst0010",$searchParam, $where);
 
                 //　登録する
