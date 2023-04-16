@@ -1618,7 +1618,7 @@ class CommonComponent
                     )";
 
 
-
+                
                 $connection->query($sql)->fetchAll('assoc');
             } else { //-- paid member
                 $sql .= " INSERT into public." . $table . "
