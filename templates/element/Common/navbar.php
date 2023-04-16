@@ -18,7 +18,7 @@
     <div id="drop_menu2" hidden="">
         <a href="../ml-message/message?shop_cd=<?= h($shop_cd) ?>">&nbsp;&nbsp;&nbsp;&nbsp;メッセージ作成</a>
         <a href="../MlRMsg/RMsg?shop_cd=<?= h($shop_cd) ?>">&nbsp;&nbsp;&nbsp;&nbsp;メッセージ履歴</a>
-        <a href="http://133.242.50.64:8888/#/chat/<?= h($shop_cd) ?>">&nbsp;&nbsp;&nbsp;&nbsp;チャット</a>
+        <!-- <a href="http://133.242.50.64:8888/#/chat/<?= h($shop_cd) ?>">&nbsp;&nbsp;&nbsp;&nbsp;チャット</a> -->
     </div>
 
 <!--    <div onclick="drop_menu('3');">

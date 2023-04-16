@@ -130,7 +130,7 @@ class CouponController extends AppController
             $rankB       =  $cpn_data[0]['rank'];
             $visit_condition   =  $cpn_data[0]['visit_condition']; //来店条件----------from DB KARL
 
-            
+
 
             if ($cpn_data[0]['background'] == NULL) {
                 $background  = "#ffffff";
@@ -219,18 +219,31 @@ class CouponController extends AppController
             // }
 
             // ---------------------------------------------------------------------------------------
-            if ($pic_nm[0] !== "") {
+            // if ($pic_nm[0] !== "") {
+            //     $j = 1;
+            //     foreach ($pic_nm as $val) {
+            //         if ($val !== "" &&  $cpn_data[0]['thumbnail1'] !== "") {
+            //             $searchParam['thumbnail1'] = $val;
+            //             unlink($path . '/' . $cpn_data[0]['thumbnail1']);
+            //         } else {
+            //             $searchParam['thumbnail1'] = $val;
+            //         }
+            //     }
+            //}
+            // ---------------------------------------------------------------------------------------
+            //------------------------------------------------THUMBNAIL
+            if ($pic_nm[0] !== "" && $pic_nm[0]  !== null) {
                 $j = 1;
                 foreach ($pic_nm as $val) {
-                    if ($val !== "" &&  $cpn_data[0]['thumbnail1'] !== "") {
-                        $searchParam['thumbnail1'] = $val;
-                        unlink($path . '/' . $cpn_data[0]['thumbnail1']); 
+                    if ($cpn_data[0]['thumbnail' . $j] !== "" && $cpn_data[0]['thumbnail' . $j] !== null) {
+                        $searchParam['thumbnail' . $j] = $val;
+                        unlink($path . '/' . $cpn_data[0]['thumbnail' . $j]);
                     } else {
-                        $searchParam['thumbnail1'] = $val;
+                        $searchParam['thumbnail' . $j] = $cpn_data[0]['thumbnail' . $j];
                     }
+                    $j++;
                 }
             }
-            // ---------------------------------------------------------------------------------------
 
 
             if ($searchParam['btn_click_name'] == CON_SAVE_IN) {
@@ -316,11 +329,11 @@ class CouponController extends AppController
                             $common->insertCouponData("mst0012", $searchParam, 0); //0 for FREE member(paidmemberchecker)
                         }
                     } else { //--paid member 部分
-                        
-                        
+
+
                         foreach ($user_data as $val) {
-                            
-                            
+
+
                             $searchParam['insuser_cd']   = $shop_cd;
                             $searchParam['insdatetime']  = "now()";
                             $searchParam['upduser_cd']   = $shop_cd;
@@ -339,21 +352,17 @@ class CouponController extends AppController
                             $searchParam['birthday']     = $searchParam['birth_month'];
                             $searchParam['rank']         = $searchParam['rank'];
 
-                           
+
                             //　登録する---INSERT
                             $common->insertCouponData("mst0012", $searchParam, 1); //1 for PAID member(paidmemberchecker)
 
                         }
-                        
                     }
-
-                   
-
                 } else { //check if COUPON_CD not NULL = update ALL ONCE 
 
                     $whereUpdate = " shop_cd = '" . $shop_cd . "' and coupon_cd ='" . $cpn_cd_1 . "'";
 
-                    if ($shop_data[0]['paidmember'] == 1){ //paid member UPDATE
+                    if ($shop_data[0]['paidmember'] == 1) { //paid member UPDATE
 
                         //searchParam 追加する
                         $searchParam['birthday']     = $searchParam['birth_month'];
@@ -363,16 +372,13 @@ class CouponController extends AppController
 
 
                         $common->updateCouponData("mst0012", $searchParam, $whereUpdate);
-                    
-                    }else{ //FREE  member UPDATE
+                    } else { //FREE  member UPDATE
 
                         $searchParam['effect_srt']   = str_replace("-", "", $searchParam['effect_srt']);
                         $searchParam['effect_end']   = str_replace("-", "", $searchParam['effect_end']);
-                        
+
                         $common->updateCouponData("mst0012", $searchParam, $whereUpdate);
                     }
-
-
                 }
             } //--END of button click SAVE
             return $this->redirect(
