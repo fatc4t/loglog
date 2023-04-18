@@ -205,7 +205,8 @@ class CouponController extends AppController
                 $searchParam['color'] = "696969";
             }
 
-
+            
+            // ---------------------------------------------------------------------------------------NEPAL製
             // if($pic_nm[0] != ""){
             //     $j=1;
             //     foreach($pic_nm as $val){
@@ -218,7 +219,6 @@ class CouponController extends AppController
             //     if($cpn_data[0]['thumbnail3']){$file3 = $path.'/'.$cpn_data[0]['thumbnail3'];unlink($file3);}
             // }
 
-            // ---------------------------------------------------------------------------------------
             // if ($pic_nm[0] !== "") {
             //     $j = 1;
             //     foreach ($pic_nm as $val) {
@@ -231,7 +231,8 @@ class CouponController extends AppController
             //     }
             //}
             // ---------------------------------------------------------------------------------------
-            //------------------------------------------------THUMBNAIL
+
+            //------------------------------------------------THUMBNAIL the correct way
             if ($pic_nm[0] !== "" && $pic_nm[0]  !== null) {
                 $j = 1;
                 foreach ($pic_nm as $val) {
@@ -286,15 +287,7 @@ class CouponController extends AppController
 
                 $cpn_cd_1 = sprintf("%06d", $cpn_data[0]['coupon_cd']);
 
-                //-----------------------------------------------------------fucking UPDATE whyyyy????
-                // this DELETE is for UPDATE...設計悪いなぁ。
-                // foreach($user_data as $val){
-                //     // 削除条件
-                //     $where = " shop_cd = '".$shop_cd."' and coupon_cd ='".$cpn_cd_1."'";
-                //     // 削除
-                //     //$common->prDeletedata("mst0012",$where); //why delete? not update?--WTF
 
-                // }
 
 
 
@@ -328,6 +321,9 @@ class CouponController extends AppController
                             //　登録する---INSERT
                             $common->insertCouponData("mst0012", $searchParam, 0); //0 for FREE member(paidmemberchecker)
                         }
+
+                        
+
                     } else { //--paid member 部分
 
 
