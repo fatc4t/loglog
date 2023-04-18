@@ -38,8 +38,8 @@ define('CON_IMAGE_Card'         , '../webroot/img/Card/');
 define('CON_IMAGE_Logo'         , '../webroot/img/CardLogo/');
 define('CON_IMAGE_Profile'      , '../webroot/img/profile/');
 define('CON_MSG_IMAGE'          , '../webroot/img/Message/');
-// define('CON_CPN_IMAGE'          , '../webroot/img/Coupon/');
-define('CON_CPN_IMAGE'          , '/loglog/webroot/img/Coupon/');
+define('CON_CPN_IMAGE'          , '../webroot/img/Coupon/');
+//define('CON_CPN_IMAGE'          , '/loglog/webroot/img/Coupon/'); //LOCAL only
 define('CON_MEMO_IMAGE'         , '../webroot/img/Memo/');
 define('CON_URL'                ,'http://153.126.145.215/');
 define('CON_A'                  , '日別来店者数');

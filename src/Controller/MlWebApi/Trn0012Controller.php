@@ -50,7 +50,7 @@
             
             // ユーザーマスタ取得
             $whereG  = " user_cd  = '".$user_cd."'";
-            $orderG  = " raiten_time ";
+            $orderG  = " raiten_time desc";
          //   $whereG  = " user_cd  = '".$user_cd."' and connect_kbn = '0' ";
             $trn0012 = $common->prGetData('Trn0012',$whereG,$orderG);
             $this->set(compact('trn0012'));
