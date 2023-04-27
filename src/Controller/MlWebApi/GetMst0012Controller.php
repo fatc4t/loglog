@@ -5,6 +5,10 @@
      * @date      2023/01/13
      * @version   1.00
      * @note      Coupon Info get
+     * 
+     * edited K(2023/02)
+     * edited K(2023/03) - geolocation
+     * edited K(2023/04) - new coupon table, shopimage 追加
      */
 
     namespace App\Controller\MlWebApi;
@@ -46,36 +50,63 @@
             $connection = ConnectionManager::get('default');
             // 条件
         
+            // $sql   = "";
+            // $sql   .= "select";
+            // $sql   .= " mst0012.shop_cd, "; 
+            // $sql   .= " mst0010.shop_add1, "; 
+            // $sql   .= " mst0010.shop_add2, "; 
+            // $sql   .= " mst0012.coupon_cd, ";    
+            // $sql   .= " mst0010.shop_nm, ";    
+            // $sql   .= " mst0010.category_cd, ";    
+            // $sql   .= " mst0012.coupon_goods, ";    
+            // $sql   .= " mst0012.effect_srt, ";    
+            // $sql   .= " mst0012.effect_end, ";    
+            // $sql   .= " mst0012.coupon_discount, ";    
+            // $sql   .= " mst0012.thumbnail1, ";    
+            // $sql   .= " mst0012.thumbnail2, ";    
+            // $sql   .= " mst0012.thumbnail3, ";    
+            // $sql   .= " mst0012.connect_kbn, ";    
+            // $sql   .= " mst0012.used, ";  
+            // $sql   .= " mst0012.color, ";
+            // $sql   .= " mst0012.visit_condition, ";     
+            // $sql   .= " (ABS(GEO.longtitude::FLOAT-ABS(".$long."))+ABS(GEO.latitude::FLOAT-ABS(".$lat."))) as Proximity";             
+            // $sql   .= " from ".$table;
+            // $sql   .= " left join mst0010 on mst0012.shop_cd = mst0010.shop_cd ";
+            // $sql   .= " left join geolocations GEO on GEO.shop_cd = mst0010.shop_cd";
+            // $sql   .= " where user_cd = "."'".$user_cd."'";
+            // $sql   .= " and (effect_end >= to_char(Now(),'YYYYMMDD') and to_char(Now(),'YYYYMMDD') >= effect_srt) "; 
+            // $sql   .= " order by proximity asc,";
+            // $sql   .= " used ASC, ";  
+            // $sql   .= " effect_srt DESC ";  
+
+
+
             $sql   = "";
-            $sql   .= "select";
-            $sql   .= " mst0012.shop_cd, "; 
-            $sql   .= " mst0010.shop_add1, "; 
-            $sql   .= " mst0010.shop_add2, "; 
-            $sql   .= " mst0012.coupon_cd, ";    
-            $sql   .= " mst0010.shop_nm, ";    
-            $sql   .= " mst0010.category_cd, ";    
-            $sql   .= " mst0012.coupon_goods, ";    
-            $sql   .= " mst0012.effect_srt, ";    
-            $sql   .= " mst0012.effect_end, ";    
-            $sql   .= " mst0012.coupon_discount, ";    
-            $sql   .= " mst0012.thumbnail1, ";    
-            $sql   .= " mst0012.thumbnail2, ";    
-            $sql   .= " mst0012.thumbnail3, ";    
-            $sql   .= " mst0012.connect_kbn, ";    
-            $sql   .= " mst0012.used, ";  
-            $sql   .= " mst0012.color, ";
-            $sql   .= " mst0012.visit_condition, ";     
-            $sql   .= " (ABS(GEO.longtitude::FLOAT-ABS(".$long."))+ABS(GEO.latitude::FLOAT-ABS(".$lat."))) as Proximity";             
-            $sql   .= " from ".$table;
-            $sql   .= " left join mst0010 on mst0012.shop_cd = mst0010.shop_cd ";
-            $sql   .= " left join geolocations GEO on GEO.shop_cd = mst0010.shop_cd";
-            $sql   .= " where user_cd = "."'".$user_cd."'";
-            //$sql   .= " and effect_end >= to_char(Now(),'YYYYMMDD') "; //-----old
-            $sql   .= " and (effect_end >= to_char(Now(),'YYYYMMDD') and to_char(Now(),'YYYYMMDD') >= effect_srt) "; 
-            $sql   .= " order by proximity asc,";
-            $sql   .= " used ASC, ";  
-            $sql   .= " effect_srt DESC ";  
-            
+            $sql   .= "
+            SELECT coupons.shop_cd,  
+            mst0010.shop_add1,  
+            mst0010.shop_add2,  
+            coupons.unique_coupon_cd as coupon_cd,  
+            mst0010.shop_nm,  
+            mst0010.category_cd,  
+            coupons.coupon_goods,  
+            coupons.effect_srt,  
+            coupons.effect_end,  
+            coupons.coupon_discount,
+            mst0010.thumbnail1 as shopimage,  
+            coupons.thumbnail1,  
+            coupons.thumbnail2,  
+            coupons.thumbnail3,  
+            coupons.connect_kbn,  
+            cpnTrn.used,  
+            coupons.color,  
+            coupons.visit_condition,  
+            (ABS(GEO.longtitude::FLOAT-ABS(".$long."))+ABS(GEO.latitude::FLOAT-ABS(".$lat."))) as Proximity 
+            from ".$table." left join coupons_used cpnTrn on cpnTrn.unique_coupon_cd = coupons.unique_coupon_cd 
+            left join mst0010 on coupons.shop_cd = mst0010.shop_cd  
+            left join geolocations GEO on GEO.shop_cd = mst0010.shop_cd 
+            where cpnTrn.user_cd = '".$user_cd."' and (effect_end >= to_char(Now(),'YYYYMMDD') 
+            and to_char(Now(),'YYYYMMDD') >= effect_srt)  order by proximity asc, used ASC,  effect_srt DESC ";
 
             
             // SQLの実行
@@ -116,7 +147,7 @@
             
             $couponData = '';
             // Couponデータ
-            $couponData =  $this -> prGetCouponData('mst0012',$user_cd,$lat,$long);
+            $couponData =  $this -> prGetCouponData('coupons',$user_cd,$lat,$long);
             
 
             $EffectS ='';
@@ -158,24 +189,26 @@
                     'shop_cd'          => $data['shop_cd'],
                     'shop_add1'        => $data['shop_add1'],    
                     'shop_add2'        => $data['shop_add2'], 
-                    'coupon_cd'        => $data['coupon_cd'],  
+                    'coupon_cd'        => strval($data['coupon_cd']),  //integer in coupons table
                     'shop_nm'          => $data['shop_nm'], 
                     'category_cd'      => $data['category_cd'], 
                     'coupon_goods'     => $data['coupon_goods'],   
                     'effect_srt'       => $data['effect_srt'],   
                     'effect_end'       => $data['effect_end'],
                     'coupon_discount'  => $data['coupon_discount'],
-                    'thumbnail1'       => $data['thumbnail1'],
+                    'shopimage'        => $data['shopimage'],
+                    'thumbnail1'       => strval($data['coupon_cd']).'/'.$data['thumbnail1'], //added coupon_cd FOlder
                     'thumbnail2'       => $data['thumbnail2'],
                     'thumbnail3'       => $data['thumbnail3'],
                     'connect_kbn'      => $data['connect_kbn'],
-                    'used'             => $data['used'],
+                    'used'             => strval($data['used']),    //integer in coupons_used table
                     'color'            => $data['color'],
                     'visit_condition'  => $data['visit_condition'], 
                     'proximity'        => $data['proximity'],    //lat long
                 );
                 $json_array[] = $aryAddRow;
             }
+            
            
         
             //print_r($couponData[0]);exit;

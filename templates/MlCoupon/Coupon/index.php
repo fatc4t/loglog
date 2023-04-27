@@ -70,7 +70,7 @@
                 'label'     => false,
             ]
         ); ?>
-        <input type="submit" value="プレビュー" name="preview" onclick="return confirm_preview('<?= ($shop_data[0]['paidmember']) ?>')" />
+        <input type="button" value="プレビュー" name="preview" onclick="return confirm_preview('<?= ($shop_data[0]['paidmember']) ?>')" />
         <?php echo $this->element('Common/Preview'); ?>
         <br />
     </div>

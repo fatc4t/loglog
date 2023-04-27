@@ -16,10 +16,10 @@
                                       'onsubmit' => 'return check()'
                                     ]) ?>
         <div >
-            <?php echo $this->Form->input('coupon_cd',[
+            <?php echo $this->Form->input('unique_coupon_cd',[
                                             'type'      => 'text',
-                                            'id'        => 'coupon_cd',
-                                            'name'      => 'coupon_cd',
+                                            'id'        => 'unique_coupon_cd',
+                                            'name'      => 'unique_coupon_cd',
                                             'value'     => '',
                                             'hidden',
                                             'label' => false,
@@ -75,7 +75,7 @@
                             foreach ($cpn_data as $rows ) { ?>
                                 <tr class="table_tr">
                                     <td hidden><?= h($rows['shop_cd']); ?></td>
-                                    <td hidden><?= h($rows['coupon_cd']); ?></td>
+                                    <td hidden><?= h($rows['unique_coupon_cd']); ?></td>
                                     <td align=left width=20%><?= h(substr($rows['updatetime'],0,16)); ?></td>
                                     <td align=left width=20%><?= h($rows['coupon_goods']); ?></td>   
                                     <td align=left width=20%><?= h($rows['coupon_discount']); ?></td> 
@@ -117,19 +117,20 @@
     </div>
 </form>
 <?php echo $this->Form->end() ?>
+
 <script>
     
     $(".cpn_delete").on("click", function(){
         var result = window.confirm('本当に削除しますか？');
         if( result ) {
-            var coupon_cd = $(this).closest('tr').children("td")[1].innerText;
-            document.getElementById("coupon_cd").value = coupon_cd;
+            var unique_coupon_cd = $(this).closest('tr').children("td")[1].innerText;
+            document.getElementById("unique_coupon_cd").value = unique_coupon_cd;
         }
     });
     
     $(".cpn_edit").on("click", function(){
-        var coupon_cd = $(this).closest('tr').children("td")[1].innerText;
-       document.getElementById("coupon_cd").value = coupon_cd;
+        var unique_coupon_cd = $(this).closest('tr').children("td")[1].innerText;
+       document.getElementById("unique_coupon_cd").value = unique_coupon_cd;
     });
     
     /**

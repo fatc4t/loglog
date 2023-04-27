@@ -329,63 +329,63 @@ class CommonComponent
         return $pic_nm;
     }
 
-     /**
+    /**
      * Card LOGO save method.【 写真保存 】 -----K(2023/04)
      *
      * @return void
      */
 
-     public static  function saveCardLogo($path = NULL, $myFiles = NULL)
-     {
- 
-         $pic_nm = [];
-         // お店の写真を保存するためにフォルダーを作成する
-         if (!file_exists($path)) {
-             mkdir($path, 0777, true);
-         }
-         $files = $_FILES['logo']['tmp_name']; 
- 
- 
-         $file_name = $_FILES['logo']['name'];
- 
- 
-         $path1     = $path . '/';
- 
-         $j = 0;
- 
-         // ファイルがアップロードされているかの判定
-         if ($files) {
- 
-             list($width, $height) = getimagesize($files);
- 
-             // 縦横のリサイズ後のピクセル数を求める
-             if ($width > $height) {
-                 $ratio = 300 / $width;
-             } else {
-                 $ratio = 300 / $height;
-             }
- 
-             $nwidth  = (int)($width * $ratio);
-             $nheight = (int)($height * $ratio);
-             $newimage = imagecreatetruecolor($nwidth, $nheight);
- 
-             // JPEG, PNG, GIF, BMP, WBMP, GD2 をサポートするようビルドされている場合、 イメージの種類は自動的に判別される
-             $source = imagecreatefromstring(file_get_contents($files));
-             imagecopyresized($newimage, $source, 0, 0, 0, 0, $nwidth, $nheight, $width, $height);
-             imagejpeg($newimage, $path1 . $file_name, 30);
- 
- 
-             
- 
-             // アップロードしたファイルを $path1 に保存
-             $pic_nm = $myFiles->getClientFilename();
-         } else {
-             $pic_nm = "";
-         }
-         $j++;
- 
-         return $pic_nm;
-     }
+    public static  function saveCardLogo($path = NULL, $myFiles = NULL)
+    {
+
+        $pic_nm = [];
+        // お店の写真を保存するためにフォルダーを作成する
+        if (!file_exists($path)) {
+            mkdir($path, 0777, true);
+        }
+        $files = $_FILES['logo']['tmp_name'];
+
+
+        $file_name = $_FILES['logo']['name'];
+
+
+        $path1     = $path . '/';
+
+        $j = 0;
+
+        // ファイルがアップロードされているかの判定
+        if ($files) {
+
+            list($width, $height) = getimagesize($files);
+
+            // 縦横のリサイズ後のピクセル数を求める
+            if ($width > $height) {
+                $ratio = 300 / $width;
+            } else {
+                $ratio = 300 / $height;
+            }
+
+            $nwidth  = (int)($width * $ratio);
+            $nheight = (int)($height * $ratio);
+            $newimage = imagecreatetruecolor($nwidth, $nheight);
+
+            // JPEG, PNG, GIF, BMP, WBMP, GD2 をサポートするようビルドされている場合、 イメージの種類は自動的に判別される
+            $source = imagecreatefromstring(file_get_contents($files));
+            imagecopyresized($newimage, $source, 0, 0, 0, 0, $nwidth, $nheight, $width, $height);
+            imagejpeg($newimage, $path1 . $file_name, 30);
+
+
+
+
+            // アップロードしたファイルを $path1 に保存
+            $pic_nm = $myFiles->getClientFilename();
+        } else {
+            $pic_nm = "";
+        }
+        $j++;
+
+        return $pic_nm;
+    }
 
     /**
      * prDeletedata method.【 削除 】
@@ -515,7 +515,7 @@ class CommonComponent
             $sql2 .= "point                 ='" . $searchParam['point'] . "', ";
             $sql2 .= "special_point_cd      ='" . $searchParam['special_point_cd'] . "', ";
             $sql2 .= "shop_group_cd         ='" . $searchParam['shop_group_cd'] . "', ";
-            $sql2 .= "barcode_kbn           ='" . $searchParam['barcodeType'] . "', ";      //
+            $sql2 .= "barcode_kbn           ='" . $searchParam['barcode_kbn'] . "', ";      //
             $sql2 .= "logo                  ='" . $searchParam['logo'] . "' ";              //card logo
 
             $sql2 .= " " . $where . " ";
@@ -916,7 +916,7 @@ class CommonComponent
 
     /*
      * prGetcouponUsedData method.【 クーポン利用者数データ 】
-     * @return void
+     * K(2023/04)
      */
     public static function prGetcouponUsedData($where = NULL)
     {
@@ -1523,8 +1523,8 @@ class CommonComponent
             $sql2 .= "rank                  ='" . $searchParam['rank'] . "', ";
             $sql2 .= "background            ='" . $searchParam['background'] . "', ";
             $sql2 .= "color                 ='" . $searchParam['color'] . "', ";
-            $sql2 .= "prefecture            ='" . $searchParam['prefecture'] . "', ";
-            $sql2 .= "birthday              ='" . $searchParam['birthday'] . "', ";
+            $sql2 .= "prefecture            ='" . $searchParam['user_add'] . "', ";
+            $sql2 .= "birthday              ='" . $searchParam['birth_month'] . "', ";
             //-------------------------FREE USER-----------------------------------
             $sql2 .= "effect_srt            ='" . $searchParam['effect_srt'] . "', ";
             $sql2 .= "effect_end            ='" . $searchParam['effect_end'] . "', ";
@@ -1538,7 +1538,8 @@ class CommonComponent
 
 
 
-            $connection->query($sql2)->fetchAll('assoc');
+            $connection->execute($sql2);
+            $connection->commit();
         } catch (Exception $e) {
             $this->Flash->error($e);
             $connection->rollback();
@@ -1618,8 +1619,10 @@ class CommonComponent
                     )";
 
 
-                
-                $connection->query($sql)->fetchAll('assoc');
+
+
+                $connection->execute($sql);
+                $connection->commit();
             } else { //-- paid member
                 $sql .= " INSERT into public." . $table . "
                 (
@@ -1675,7 +1678,130 @@ class CommonComponent
                         '" . $searchParam['visit_condition'] . "'
                         )";
 
+                $connection->execute($sql);
+                $connection->commit();
+            }
+        } catch (Exception $e) {
+            $this->Flash->error($e);
+            $connection->rollback();
+        }
+    }
+
+    /**
+     * INSERT NEW Coupon Data 【 登録 】- Coupons table----> return currval
+     * K(2023/04)
+     * @return currval('unique_coupon_cd_seq')
+     */
+    public static function insertNEWCouponData($table = NULL, $searchParam = NULL, $paidMemberCheck = null)
+    {
+
+        // 
+        date_default_timezone_set('Asia/Tokyo');
+        // トランザクション
+        $connection = ConnectionManager::get('default');
+
+        // 共通のComponentを呼び出す
+        $common = new CommonComponent();
+
+        //  $connection->begin();
+        try {
+            $sql = "";
+            if ($paidMemberCheck == 0) { //--not paid member
+                $sql .= " INSERT INTO public." . $table . " 
+                (
+                unique_coupon_cd,
+                updatetime,
+                shop_cd,
+                coupon_goods,
+                effect_srt,
+                effect_end,
+                coupon_discount,
+                thumbnail1,
+                thumbnail2,
+                thumbnail3,
+                connect_kbn,
+                visit_condition
+                ) 
+                VALUES (
+                    nextval('unique_coupon_cd_seq'), 
+                    '" . $searchParam['updatetime'] . "',
+                    '" . $searchParam['shop_cd'] . "',
+                    '" . $searchParam['coupon_goods'] . "', 
+                    '" . $searchParam['effect_srt'] . "',
+                    '" . $searchParam['effect_end'] . "',
+                    '" . $searchParam['coupon_discount'] . "', 
+                    '" . $searchParam['thumbnail1'] . "',
+                    '" . $searchParam['thumbnail2'] . "',
+                    '" . $searchParam['thumbnail3'] . "',
+                    '" . $searchParam['connect_kbn'] . "',
+                    '" . $searchParam['visit_condition'] . "'
+                    )";
+
+
+
                 $connection->query($sql)->fetchAll('assoc');
+
+                $currvalSQL = "";
+                $currvalReturn = "";
+
+                $currvalSQL .= "SELECT currval('unique_coupon_cd_seq')";
+                $currvalReturn = $connection->query($currvalSQL)->fetchAll('assoc');
+
+                return $currvalReturn;
+            } else { //-- paid member
+                $sql .= " INSERT into public." . $table . "
+                (
+                    unique_coupon_cd,
+                    updatetime,
+                    shop_cd,
+                    coupon_goods,
+                    effect_srt,
+                    effect_end,
+                    coupon_discount,
+                    thumbnail1,
+                    thumbnail2,
+                    thumbnail3,
+                    connect_kbn,
+                    background,
+                    color,
+                    prefecture,
+                    age,
+                    gender,
+                    birthday,
+                    rank,
+                    visit_condition
+                    ) 
+                    VALUES (
+                        nextval('unique_coupon_cd_seq'), 
+                        '" . $searchParam['updatetime'] . "',
+                        '" . $searchParam['shop_cd'] . "',
+                        '" . $searchParam['coupon_goods'] . "', 
+                        '" . $searchParam['effect_srt'] . "',
+                        '" . $searchParam['effect_end'] . "',
+                        '" . $searchParam['coupon_discount'] . "', 
+                        '" . $searchParam['thumbnail1'] . "',
+                        '" . $searchParam['thumbnail2'] . "',
+                        '" . $searchParam['thumbnail3'] . "',
+                        '" . $searchParam['connect_kbn'] . "',
+                        '" . $searchParam['background'] . "',
+                        '" . $searchParam['color'] . "',
+                        '" . $searchParam['user_add'] . "', 
+                        '" . $searchParam['age'] . "', 
+                        '" . $searchParam['gender'] . "',
+                        '" . $searchParam['birthday'] . "',
+                        '" . $searchParam['rank'] . "',
+                        '" . $searchParam['visit_condition'] . "'
+                        )";
+
+                $connection->query($sql)->fetchAll('assoc');
+
+                $currvalSQL = "";
+                $currvalReturn = "";
+
+                $currvalSQL .= "SELECT currval('unique_coupon_cd_seq')";
+                $currvalReturn = $connection->query($currvalSQL)->fetchAll('assoc');
+
+                return $currvalReturn;
             }
         } catch (Exception $e) {
             $this->Flash->error($e);
@@ -1726,11 +1852,180 @@ class CommonComponent
             '0'
             )
             RETURNING user_cd
-            ";
+            "; //RETURNING = returns (something)
 
             $user_cd = $connection->query($sql)->fetchAll('assoc'); //RETURN SEQUENCE user_cd
 
+            
             return $user_cd;
+
+ 
+
+
+        } catch (Exception $e) {
+            $this->Flash->error($e);
+            $connection->rollback();
+        }
+    }
+
+    /**
+     * Coupon Data GET method.【 データ取得 】
+     * K(2023/04)
+     * @return void
+     */
+    public static function getCouponData($table = NULL, $unique_coupon_cd = NULL, $shop_cd = NULL)
+    {
+
+        $connection = ConnectionManager::get('default');
+
+        $sql   = "";
+        $sql   .= "SELECT ";
+        $sql   .= " * ";
+        $sql   .= " FROM " . $table;
+        $sql   .= " WHERE ";
+        $sql   .= " unique_coupon_cd          = " . $unique_coupon_cd;
+        $sql   .= " AND shop_cd                   = '" . $shop_cd . "' ";
+
+        // SQLの実行
+        $query = $connection->query($sql)->fetchAll('assoc');
+
+        return $query;
+    }
+
+
+    /**
+     * Coupon Data GET method.【 データ取得 】履歴画面
+     * K(2023/04)
+     * @return void
+     */
+    public static function getCouponDataRireki($table = NULL, $shop_cd = NULL)
+    {
+
+        $connection = ConnectionManager::get('default');
+
+        $sql   = "";
+        $sql   .= "SELECT ";
+        $sql   .= " * ";
+        $sql   .= " FROM " . $table;
+        $sql   .= " WHERE ";
+        $sql   .= " shop_cd   = '" . $shop_cd . "' ";
+
+        // SQLの実行
+        $query = $connection->query($sql)->fetchAll('assoc');
+
+        return $query;
+    }
+
+    /**
+     * 新規登録クーポン -- ユーザーごとに作成
+     * 
+     * K(2023/04)
+     * 
+     * @return void
+     */
+    public static function insertCouponTrn($table = NULL, $unique_coupon_id = null, $user_cd = null, $searchParam = null)
+    {
+
+        // 
+        date_default_timezone_set('Asia/Tokyo');
+        // トランザクション
+        $connection = ConnectionManager::get('default');
+
+        // Set the transaction timeout to 5 minutes
+        $connection->execute('SET LOCAL statement_timeout = 300000');
+
+        // 共通のComponentを呼び出す
+        $common = new CommonComponent();
+
+
+        //$connection->begin();
+        try {
+            // 登録
+            $sql = "";
+            $sql .= " INSERT into public." . $table . " 
+            (           
+            unique_coupon_cd,    
+            updatetime,
+            user_cd,
+            used
+            )
+            VaLUES
+            (    
+            " .  $unique_coupon_id . ",
+            '" . $searchParam['updatetime'] . "',
+            '" . $user_cd . "',
+            '" . $searchParam['used'] . "'
+            )
+            ";
+
+            $connection->query($sql)->fetchAll('assoc'); //RETURN SEQUENCE user_cd
+
+            $connection->commit();
+        } catch (Exception $e) {
+            $this->Flash->error($e);
+            $connection->rollback();
+        }
+    }
+
+    /**
+     * delete coupons.【 削除 】
+     * delete coupons_used
+     *  K(2023/04)
+     * @return void
+     */
+    public static function couponsDelete($unique_coupon_cd, $shop_cd)
+    {
+        // トランザクション
+        $connection = ConnectionManager::get('default');
+
+        //$connection->begin();
+        try {
+            // 削除
+            $delCouponsSql = " DELETE FROM public.coupons
+                                WHERE unique_coupon_cd=" . $unique_coupon_cd . " 
+                                AND shop_cd='" . $shop_cd . "'";
+            
+            $connection->execute($delCouponsSql);
+
+            
+            $delCouponsUsedSql = " DELETE FROM public.coupons_used 
+                                    WHERE unique_coupon_cd=" . $unique_coupon_cd;
+             
+            $connection->execute($delCouponsUsedSql);
+
+            $connection->commit();
+        } catch (Exception $e) {
+            $this->Flash->error($e);
+            $connection->rollback();
+        }
+    }
+
+    public static function updateCouponThumbnail($table = NULL, $unique_cp_val = null, $searchParam = null)
+    {
+
+        // 
+        date_default_timezone_set('Asia/Tokyo');
+        // トランザクション
+        $connection = ConnectionManager::get('default');
+
+
+        // 共通のComponentを呼び出す
+        $common = new CommonComponent();
+
+        try {
+
+
+            $sql = "";
+            $sql = " UPDATE public." . $table . " SET ";
+            $sql .= "thumbnail1                 ='" . $searchParam['thumbnail1'] . "', ";
+            $sql .= "thumbnail2                 ='" . $searchParam['thumbnail2'] . "', ";
+            $sql .= "thumbnail3                 ='" . $searchParam['thumbnail3'] . "' ";
+            $sql .= "WHERE unique_coupon_cd     =" . $unique_cp_val;
+
+
+            $connection->execute($sql);
+
+            $connection->commit();
         } catch (Exception $e) {
             $this->Flash->error($e);
             $connection->rollback();

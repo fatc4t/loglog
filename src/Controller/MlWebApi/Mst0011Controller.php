@@ -57,11 +57,11 @@
             // 新規の顧客コード作成しとく。
             // パラメータの準備
             $searchParam = [];
-            $searchParam['insuser_cd']  = $maxValue;
+            //$searchParam['insuser_cd']  = $maxValue;
             $searchParam['insdatetime'] = 'now() ';
-            $searchParam['upduser_cd']  = $maxValue; 
+            //$searchParam['upduser_cd']  = $maxValue; 
             $searchParam['updatetime']  = 'now() '; 
-            $searchParam['user_cd']     = $maxValue; 
+            //$searchParam['user_cd']     = $maxValue; 
             $searchParam['user_nm']     = ''; 
             $searchParam['user_kn']     = ''; 
             $searchParam['birthday']    = '';

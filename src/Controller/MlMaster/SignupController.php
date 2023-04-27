@@ -58,13 +58,14 @@ class SignupController extends AppController
         $common = new CommonComponent();
 
         $path        = "";
-        $cardLogoPath = CON_IMAGE_Logo.$shop_cd;    //('../webroot/img/CardLogo/')
+        $cardLogoPath = CON_IMAGE_Logo . $shop_cd;    //('../webroot/img/CardLogo/')
 
         $pic_nm      = [];
 
         // urlから店舗コードを取得する
         $shop_cd  = '0001';
         $shop_cd1 = $this->request->getQuery('shop_cd1');
+        $shop_cdChecker = $this->request->getQuery('shop_cd1');
 
         if ($shop_cd1) {
             // DBより店舗情報を取得
@@ -151,10 +152,6 @@ class SignupController extends AppController
             $searchParam =  $this->getRequest()->getData();
             $this->set(compact('searchParam'));
 
-            // 削除
-            $where = " shop_cd = '" . $shop_cd1 . "'";
-            $common->prDeletedata("mst0010", $where);
-
             // LOL authentication LMAO---not me
             $phone = $this->prGetphoneData($searchParam);
 
@@ -168,34 +165,39 @@ class SignupController extends AppController
                 $pic_nm  = $common->prSavePic($path, $myFiles);
                 $pic_nm_cardLogo = $common->saveCardLogo($cardLogoPath, $myFiles_logo);    //card logo
 
+                //var_dump($pic_nm_cardLogo);exit;
+
                 $searchParam['thumbnail1'] = '';
                 $searchParam['thumbnail2'] = '';
                 $searchParam['thumbnail3'] = '';
                 $searchParam['logo']       = "";    //店舗カード LOGO
 
-                if ($pic_nm[0] != "") {
+                //------------------------------------------------THUMBNAIL the correct way
+                if ($pic_nm[0] !== "" && $pic_nm[0]  !== null) {
                     $j = 1;
                     foreach ($pic_nm as $val) {
-                        $searchParam['thumbnail' . $j] = $val;
+                        if ($shop_data[0]['thumbnail' . $j] !== "" && $shop_data[0]['thumbnail' . $j] !== null) { //if not empty, assign new file name and delete old file
+                            $searchParam['thumbnail' . $j] = $val;
+                            if (file_exists($path . '/' . $shop_data[0]['thumbnail' . $j])) {
+                                unlink($path . '/' . $shop_data[0]['thumbnail' . $j]);
+                            }
+                        } else {
+                            $searchParam['thumbnail' . $j] = $val;          //if EMPTY assign new file
+                        }
                         $j++;
                     }
-                } else {
-                    if ($shop_data[0]['thumbnail1']) {
-                        $file1 = $path . '/' . $shop_data[0]['thumbnail1'];
-                        unlink($file1);
-                    }
-                    if ($shop_data[0]['thumbnail2']) {
-                        $file2 = $path . '/' . $shop_data[0]['thumbnail2'];
-                        unlink($file2);
-                    }
-                    if ($shop_data[0]['thumbnail3']) {
-                        $file3 = $path . '/' . $shop_data[0]['thumbnail3'];
-                        unlink($file3);
+                } else { //if pic_nm is empty
+                    $j = 1;
+                    foreach ($pic_nm as $val) {
+                        $searchParam['thumbnail' . $j] = $shop_data[0]['thumbnail' . $j]; //assign current file to coupon
                     }
                 }
+                //------------------------------------------------THUMBNAIL the correct way
 
+
+             
                 //----CARD LOGO K(2023/04)
-                if ($pic_nm_cardLogo[0] !== "" && $pic_nm_cardLogo[0] !== null) {
+                if ($pic_nm_cardLogo !== "" && $pic_nm_cardLogo !== null) {
                     $searchParam['logo']       = $pic_nm_cardLogo;
                 }
 
@@ -212,17 +214,17 @@ class SignupController extends AppController
                 $searchParam['special_point_cd']    = "";
                 $searchParam['card_image']          = "";
                 $searchParam['bar_schar']           = "";
-             
+
 
                 //バーコード区分 SET コード -----------KARL
                 //1:JAN13 2:JAN8 3:NW7 4:Code 39 5:Code 128
                 $barcodeCODE = $common->convertBarcodeCode($searchParam['barcode_kbn']);
                 $searchParam['barcode_kbn'] = $barcodeCODE;
 
-               
+
 
                 //　登録する
-                $common->prSavedata("mst0010", $searchParam); //<---- this is fucked up
+                
 
                 //geolocation 登録 K(2023/03)
                 //-----------------------------------------------
@@ -230,7 +232,19 @@ class SignupController extends AppController
                 $add2 = $searchParam['shop_add2'];
                 $add3 = $searchParam['shop_add3'];
                 //-------------------------------------------------------------------------------------------------
-                $this->geolocationMake($shop_cd1, $add1, $add2, $add3);
+                //var_dump($shop_cdChecker);exit;
+                if (!$shop_cdChecker) { //if すでにあった場合
+                    $this->geolocationMake($shop_cd1, $add1, $add2, $add3, 1);
+                    $common->prSavedata("mst0010", $searchParam); //<---- save ALL
+                   
+                } 
+                else 
+                { //UPDATE geolocation
+                    $this->geolocationMake($shop_cd1, $add1, $add2, $add3, 0);
+                    $where = " shop_cd = '".$shop_cd1."'";
+                    $common->prUpdateEditdata("mst0010",$searchParam, $where);
+                    
+                }
 
                 //home 画面へパラメータを持って移動する                    
                 return $this->redirect(
@@ -295,12 +309,38 @@ class SignupController extends AppController
         return $query;
     }
 
+
+    /**
+     * update geolocation method.【 店舗の現在地　更新 】
+     *　K(2023/04)
+     * @return void
+     */
+    private function updateGeo($shop_cd, $longitude, $latitude, $fullShopAddr)
+    {
+
+        $connection = ConnectionManager::get('default');
+
+        $sql    = "";
+        $sql   .= " UPDATE geolocations ";
+        $sql   .= " SET ";
+        $sql   .= " longtitude  ='" . $longitude . "', ";
+        $sql   .= " latitude    ='" . $latitude . "', ";
+        $sql   .= " address     ='" . $fullShopAddr . "' ";
+
+        $sql   .= " WHERE shop_cd = '" . $shop_cd . "' ";
+        $sql   .= "  ";
+
+
+        // SQLの実行
+        $connection->query($sql)->fetchAll('assoc');
+    }
+
     /**
      * Geolocation処理する
      *
      * K(2023/03)
      */
-    private function geolocationMake($shop_cd, $add1, $add2, $add3)
+    private function geolocationMake($shop_cd, $add1, $add2, $add3, $insertChecker)
     {
 
         // 共通のComponentを呼び出す
@@ -331,6 +371,16 @@ class SignupController extends AppController
 
 
         //INSERT to GEOLOCATION テーブル
-        $common->insertLongLat($shop_cd, $longitude, $latitude, $fullShopAddr);
+        if ($insertChecker == 1) {
+            
+            $common->insertLongLat($shop_cd, $longitude, $latitude, $fullShopAddr);
+            
+        } else {
+            
+            //UPDATE to GEOLOCATION テーブル
+            $this->updateGeo($shop_cd, $longitude, $latitude, $fullShopAddr);
+            
+            
+        }
     }
 }

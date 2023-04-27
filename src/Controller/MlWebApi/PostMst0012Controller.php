@@ -5,6 +5,8 @@
      * @date      2023/01/13
      * @version   1.00
      * @note      Coupon Info get + SLider -> update coupon to USED
+     * 
+     * edited K(2023/04) - new coupons/coupons_used table
      */
 
     namespace App\Controller\MlWebApi;
@@ -42,33 +44,42 @@
         /*
          *
          */
-        public static function prGetCouponData($table=NULL,$user_cd=NULL,$shop_cd=NULL,$coupon_cd=NULL){
+        public static function updateCouponUsed($table=NULL,$user_cd=NULL,$shop_cd=NULL,$coupon_cd=NULL){
 
             $connection = ConnectionManager::get('default');
             // 条件
         
+            // $sql   = "";
+            // $sql   .= "update";
+            // $sql   .= " mst0012 set used = '1' "; 
+            // $sql   .= " where user_cd = '".$user_cd."'";    
+            // $sql   .= " and shop_cd = '".$shop_cd."'";    
+            // $sql   .= " and coupon_cd = '".$coupon_cd."'";     
+
+
             $sql   = "";
-            $sql   .= "update";
-            $sql   .= " mst0012 set used = '1' "; 
-            $sql   .= " where user_cd = '".$user_cd."'";    
-            $sql   .= " and shop_cd = '".$shop_cd."'";    
-            $sql   .= " and coupon_cd = '".$coupon_cd."'";     
+            $sql   .= "UPDATE ";
+            $sql   .= " ".$table." SET used = 1 "; 
+            $sql   .= " WHERE unique_coupon_cd = ".$coupon_cd." ";    
+            $sql   .= " and user_cd = '".$user_cd."'";    
+ 
             
             // SQLの実行
-            $query = $connection->query($sql)->fetchAll('assoc');
-            return $query;
+            $connection->execute($sql);
+            $connection->commit();
         }
 
-        public static function cheakData ($table=NULL,$user_cd=NULL,$shop_cd=NULL,$coupon_cd=NULL){
+        public static function checkData ($table=NULL,$user_cd=NULL,$shop_cd=NULL,$coupon_cd=NULL){
 
             $connection = ConnectionManager::get('default');
             // 条件
         
             $sql   = "";
-            $sql   .= " select used from mst0012 ";
-            $sql   .= " where user_cd = '".$user_cd."'";    
-            $sql   .= " and shop_cd = '".$shop_cd."'";    
-            $sql   .= " and coupon_cd = '".$coupon_cd."'";     
+            $sql   .= " SELECT used FROM ".$table. " ";
+            $sql   .= " WHERE unique_coupon_cd = '".$coupon_cd."' ";
+            $sql   .= " AND user_cd = '".$user_cd."'";    
+    
+     
 
             // SQLの実行
             $query = $connection->query($sql)->fetchAll('assoc');
@@ -85,10 +96,10 @@
             $coupon_cd = $this->request->getQuery('coupon_cd');
             
             // Couponデータ
-            $result =  $this -> prGetCouponData('mst0012',$user_cd,$shop_cd,$coupon_cd);
-            $result =  $this -> cheakData('mst0012',$user_cd,$shop_cd,$coupon_cd);
+            $this -> updateCouponUsed('coupons_used',$user_cd,$shop_cd,$coupon_cd); //update USED=1 mst0012
+            $result =  $this -> checkData('coupons_used',$user_cd,$shop_cd,$coupon_cd);          // return USED only 1 or 0
             
-            //$common->prSavedata('mst0011',$searchParam);
+            
             
             $this->set(compact('result'));
             // JSON で出力

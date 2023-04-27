@@ -126,6 +126,7 @@ class ShoplistController extends AppController {
  
                 $whereD = " shop_cd = '".$delshopcd."'";
                 $common->prDeletedata("mst0010",$whereD);
+                $common->prDeletedata("geolocations",$whereD);
 
             }else if($searchParam['btn_click_name'] == CON_UPDATE){
 

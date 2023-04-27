@@ -70,18 +70,22 @@ class RCpnController extends AppController {
         $this->set(compact('shop_nm'));
         
         // DBよりクーポンデータを取得
-        $cpn_dataW = "shop_cd = '".$shop_cd."'";
-        $cpn_dataO = "updatetime desc ";
-        $distinctM  = " coupon_cd ";
-        $cpn_data = $common->prGetDataDistinct("mst0012",$cpn_dataW,$cpn_dataO,NULL,$distinctM);
+        // $cpn_dataW = "shop_cd = '".$shop_cd."'";
+        // $cpn_dataO = "updatetime desc ";
+        // $distinctM  = " coupon_cd ";
+        // $cpn_data = $common->prGetDataDistinct("mst0012",$cpn_dataW,$cpn_dataO,NULL,$distinctM);
+
+        $cpn_data = $common->getCouponDataRireki("coupons", $shop_cd);
         $this->set(compact('cpn_data'));
-        
+       
+
         //画面からpostされたときのみ処理する 
         if ($this->getRequest()->is('post')) {
 
             $searchParam =  $this->getRequest()->getData();
             $searchParam['btn_click_name'] == "";
             $this->set(compact('searchParam'));
+            
             if(isset($searchParam['btn_click_name'])){
                 if($searchParam['btn_click_name'] == CON_CREATE){
 
@@ -93,12 +97,18 @@ class RCpnController extends AppController {
                      ]);
 
                 } else if($searchParam['btn_click_name'] == CON_DELETE){
-                    $delshopcd = $shop_cd;
-                    $delcpncd  = $searchParam['coupon_cd'];
+                    $delShop_cd = $shop_cd;
+                    $delCoupon_cd  = $searchParam['unique_coupon_cd'];
 
-                    $whereD  = " shop_cd = '".$delshopcd."'";
-                    $whereD .= " and coupon_cd = '".$delcpncd."'";
-                    $common->prDeletedata("mst0012",$whereD);
+                   
+
+                    // $whereD  = " shop_cd = '".$delshopcd."'";
+                    // $whereD .= " and coupon_cd = '".$delcpncd."'";
+                    // $common->prDeletedata("mst0012",$whereD);
+
+                    //put delete coupons and coupons_used here---------------------------------------------------------
+                    $common->couponsDelete($delCoupon_cd, $delShop_cd);
+
     
                     return $this->redirect(
                      ['controller'  => '../MlRCpn/RCpn'
@@ -110,14 +120,16 @@ class RCpnController extends AppController {
                 } else if($searchParam['btn_click_name'] == CON_UPDATE){
 
                     $upshopcd = $shop_cd;
-                    $upcpncd  = $searchParam['coupon_cd'];
+                    $upcpncd  = $searchParam['unique_coupon_cd'];
+
+                 
 
                     return $this->redirect(
-                      ['controller'      => '../MlCoupon/Coupon'
-                            , 'action'   => 'index'
-                            , '?'        => [
-                            'shop_cd'    => $upshopcd
-                            ,'coupon_cd'    => $upcpncd]
+                      ['controller'                 => '../MlCoupon/Coupon'
+                            , 'action'              => 'index'
+                            , '?'                   => [
+                            'shop_cd'               => $upshopcd
+                            ,'unique_coupon_cd'     => $upcpncd]
                      ]);
                 }
             }

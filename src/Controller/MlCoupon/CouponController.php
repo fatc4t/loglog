@@ -56,13 +56,15 @@ class CouponController extends AppController
         $shop_cd = $this->request->getQuery('shop_cd');
         // urlからクーポンコードを取得する
         $coupon_cd = $this->request->getQuery('coupon_cd');
-        $couponChecker = $this->request->getQuery('coupon_cd'); //--check if coupon cd exist
+        $couponChecker = $this->request->getQuery('unique_coupon_cd'); //--check if unique_coupon_cd exist
+
 
 
         // DBより店舗情報を取得
         $shop_dataW = "shop_cd = '" . $shop_cd . "'";
         $shop_dataO = "shop_cd ";
         $shop_data  = $common->prGetData("mst0010", $shop_dataW, $shop_dataO);
+
         $this->set(compact('shop_data'));
         if (!$shop_data) {
             echo '【店舗情報が見つかりません。URLに間違いないか確認してください。】';
@@ -101,34 +103,33 @@ class CouponController extends AppController
         $this->set(compact('visit_conditions'));
 
 
-        if ($coupon_cd) {
+        if ($couponChecker) { //EDIT COUPON
 
-            $cpn_data[0]['coupon_cd'] = $coupon_cd;
+            $cpn_data[0]['unique_coupon_cd'] = $couponChecker;
 
-            // DBよりクーポン情報を取得
-            $cpn_dataW  = " shop_cd = '" . $shop_cd . "'";
-            $cpn_dataW .= " and coupon_cd = '" . $coupon_cd . "'";
-            $distinctM  = " coupon_cd ";
-            $cpn_data = $common->prGetDataDistinct("mst0012", $cpn_dataW, NULL, NULL, $distinctM);
+
+            //GET クーポンデータ - K(2023/04)
+            $cpn_data = $common->getCouponData("coupons", $couponChecker, $shop_cd);
+
 
 
             $existImg = $cpn_data[0]['thumbnail1']; //追加した　KARL
 
-            $str1        =  substr($cpn_data[0]['effect_srt'], 0, 4);
-            $str2        =  substr($cpn_data[0]['effect_srt'], 4, 2);
-            $str3        =  substr($cpn_data[0]['effect_srt'], 6, 2);
-            $effect_srt  = $str1 . "-" . $str2 . "-" . $str3;
+            $str1               =  substr($cpn_data[0]['effect_srt'], 0, 4);
+            $str2               =  substr($cpn_data[0]['effect_srt'], 4, 2);
+            $str3               =  substr($cpn_data[0]['effect_srt'], 6, 2);
+            $effect_srt         = $str1 . "-" . $str2 . "-" . $str3;
 
-            $str4        =  substr($cpn_data[0]['effect_end'], 0, 4);
-            $str5        =  substr($cpn_data[0]['effect_end'], 4, 2);
-            $str6        =  substr($cpn_data[0]['effect_end'], 6, 2);
-            $effect_end  =  $str4 . "-" . $str5 . "-" . $str6;
-            $prefecture  =  $cpn_data[0]['prefecture'];
-            $age         =  $cpn_data[0]['age'];
-            $genderB     =  $cpn_data[0]['gender'];
-            $birthday    =  $cpn_data[0]['birthday'];
-            $rankB       =  $cpn_data[0]['rank'];
-            $visit_condition   =  $cpn_data[0]['visit_condition']; //来店条件----------from DB KARL
+            $str4               =  substr($cpn_data[0]['effect_end'], 0, 4);
+            $str5               =  substr($cpn_data[0]['effect_end'], 4, 2);
+            $str6               =  substr($cpn_data[0]['effect_end'], 6, 2);
+            $effect_end         =  $str4 . "-" . $str5 . "-" . $str6;
+            $prefecture         =  $cpn_data[0]['prefecture'];
+            $age                =  $cpn_data[0]['age'];
+            $genderB            =  $cpn_data[0]['gender'];
+            $birthday           =  $cpn_data[0]['birthday'];
+            $rankB              =  $cpn_data[0]['rank'];
+            $visit_condition    =  $cpn_data[0]['visit_condition']; //来店条件----------from DB KARL
 
 
 
@@ -141,10 +142,9 @@ class CouponController extends AppController
             }
         } else {
 
-            // クーポンコードを取得する---------NO COUPON CD
-            (int)$coupon_cd = $this->prGetcouponData($shop_cd); //get COUPON_CD MAX+1 LOL
 
-            $cpn_data[0]['coupon_cd']       = (float)$coupon_cd[0]['coupon_cd'] + 1;
+
+            //$cpn_data[0]['coupon_cd']       = (float)$coupon_cd[0]['coupon_cd'] + 1;
             $cpn_data[0]['coupon_goods']    = "";
             $cpn_data[0]['coupon_discount'] = "";
             $cpn_data[0]['thumbnail1']      = "";
@@ -159,7 +159,8 @@ class CouponController extends AppController
             $genderB                        = "";
             $birthday                       = "";
             $rankB                          = "";
-        } //--END of if(coupon_cd)
+        } //--END of if(couponChecker)
+
         $this->set(compact('cpn_data'));
         $this->set(compact('effect_srt'));
         $this->set(compact('effect_end'));
@@ -181,20 +182,17 @@ class CouponController extends AppController
             $searchParam =  $this->getRequest()->getData();
             $this->set(compact('searchParam'));
 
-            // 写真保存用のパスを設定する
-            $path    = CON_CPN_IMAGE . $shop_cd;
-            $myFiles = $this->request->getData('my_file');
-            $pic_nm  = $common->prSavePic($path, $myFiles);
 
-            if ($shop_data[0]['paidmember'] == 0) { //conditions not shown
-                $searchParam['user_add']    = "";
-                $searchParam['age']         = "";
-                $searchParam['birth_month'] = "";
-                $searchParam['gender']      = "";
-                $searchParam['background']  = "";
-                $searchParam['color']       = "";
-            }
-
+            //if ($shop_data[0]['paidmember'] == 0) { //conditions not shown(FREE USER)
+            $searchParam['user_add']    = "";
+            $searchParam['age']         = "";
+            $searchParam['birth_month'] = "";
+            $searchParam['gender']      = "";
+            $searchParam['background']  = "";
+            $searchParam['color']       = "";
+            $searchParam['rank']       = "";
+            //}
+            
             $searchParam['thumbnail1'] = "";
             $searchParam['thumbnail2'] = "";
             $searchParam['thumbnail3'] = "";
@@ -205,46 +203,7 @@ class CouponController extends AppController
                 $searchParam['color'] = "696969";
             }
 
-            
-            // ---------------------------------------------------------------------------------------NEPAL製
-            // if($pic_nm[0] != ""){
-            //     $j=1;
-            //     foreach($pic_nm as $val){
-            //         $searchParam['thumbnail'.$j] = $val;
-            //         $j++;
-            //     }
-            // }else{
-            //     if($cpn_data[0]['thumbnail1']){$file1 = $path.'/'.$cpn_data[0]['thumbnail1'];unlink($file1);}
-            //     if($cpn_data[0]['thumbnail2']){$file2 = $path.'/'.$cpn_data[0]['thumbnail2'];unlink($file2);}
-            //     if($cpn_data[0]['thumbnail3']){$file3 = $path.'/'.$cpn_data[0]['thumbnail3'];unlink($file3);}
-            // }
 
-            // if ($pic_nm[0] !== "") {
-            //     $j = 1;
-            //     foreach ($pic_nm as $val) {
-            //         if ($val !== "" &&  $cpn_data[0]['thumbnail1'] !== "") {
-            //             $searchParam['thumbnail1'] = $val;
-            //             unlink($path . '/' . $cpn_data[0]['thumbnail1']);
-            //         } else {
-            //             $searchParam['thumbnail1'] = $val;
-            //         }
-            //     }
-            //}
-            // ---------------------------------------------------------------------------------------
-
-            //------------------------------------------------THUMBNAIL the correct way
-            if ($pic_nm[0] !== "" && $pic_nm[0]  !== null) {
-                $j = 1;
-                foreach ($pic_nm as $val) {
-                    if ($cpn_data[0]['thumbnail' . $j] !== "" && $cpn_data[0]['thumbnail' . $j] !== null) {
-                        $searchParam['thumbnail' . $j] = $val;
-                        unlink($path . '/' . $cpn_data[0]['thumbnail' . $j]);
-                    } else {
-                        $searchParam['thumbnail' . $j] = $cpn_data[0]['thumbnail' . $j];
-                    }
-                    $j++;
-                }
-            }
 
 
             if ($searchParam['btn_click_name'] == CON_SAVE_IN) {
@@ -285,78 +244,192 @@ class CouponController extends AppController
                 $user_data = $common->prGetData("mst0011", $whereU, NULL, NULL);
                 $this->set(compact('user_data'));
 
-                $cpn_cd_1 = sprintf("%06d", $cpn_data[0]['coupon_cd']);
 
 
+                
 
 
 
                 if (!$couponChecker) { //----If NULL-> INSERT DB
+                   
 
                     if ($shop_data[0]['paidmember'] == 0) { //--free member
 
-                        foreach ($user_data as $val) {
-
-                            $searchParam['insuser_cd']   = $shop_cd;
-                            $searchParam['insdatetime']  = "now()";
-                            $searchParam['upduser_cd']   = $shop_cd;
-                            $searchParam['updatetime']   = "now()";
-                            $searchParam['shop_cd']      = $shop_cd;
-                            $searchParam['coupon_cd']    = $cpn_cd_1;
-                            $searchParam['effect_srt']   = str_replace("-", "", $searchParam['effect_srt']);
-                            $searchParam['effect_end']   = str_replace("-", "", $searchParam['effect_end']);
-
-                            $searchParam['user_cd']      = $val['user_cd'];
-                            $searchParam['connect_kbn']  = '0';
-                            $searchParam['used']         = '0';
-                            $searchParam['prefecture']   = NULL;
-                            $searchParam['age']          = NULL;
-                            $searchParam['gender']       = NULL;
-                            $searchParam['birthday']     = NULL;
-                            $searchParam['rank']         = NULL;
-                            $searchParam['background']   = "#ffffff";
-                            $searchParam['color']        = "696969";
 
 
-                            //　登録する---INSERT
-                            $common->insertCouponData("mst0012", $searchParam, 0); //0 for FREE member(paidmemberchecker)
+                        $searchParam['insuser_cd']   = $shop_cd;
+                        $searchParam['insdatetime']  = "now()";
+                        $searchParam['upduser_cd']   = $shop_cd;
+                        $searchParam['updatetime']   = "now()";
+                        $searchParam['shop_cd']      = $shop_cd;
+                        //$searchParam['coupon_cd']    = $cpn_cd_1;  //クーポン履歴の為に　要る
+                        $searchParam['effect_srt']   = str_replace("-", "", $searchParam['effect_srt']);
+                        $searchParam['effect_end']   = str_replace("-", "", $searchParam['effect_end']);
+
+                        //$searchParam['user_cd']      = $val['user_cd'];  //remove this
+                        $searchParam['connect_kbn']  = '0';
+                        $searchParam['used']         = '0';
+                        $searchParam['prefecture']   = NULL;
+                        $searchParam['age']          = NULL;
+                        $searchParam['gender']       = NULL;
+                        $searchParam['birthday']     = NULL;
+                        $searchParam['rank']         = NULL;
+                        $searchParam['background']   = "#ffffff";
+                        $searchParam['color']        = "696969";
+
+                        //　登録する---INSERT
+                        //$common->insertCouponData("mst0012", $searchParam, 0); //old table
+
+                        $unique_cp_valArr = $common->insertNEWCouponData("coupons", $searchParam, 0); //0 for FREE member(paidmemberchecker)
+                        $unique_cp_val = $unique_cp_valArr[0]['currval'];
+
+                        //------------------------------------------------THUMBNAIL---------------------------------------------------------------------
+                        // 写真保存用のパスを設定する -------------if EDIT (unique_coupon_cd あり)
+                        //path for IMAGE
+                        $path    = CON_CPN_IMAGE . $shop_cd . '/' . $unique_cp_val;
+
+                        $myFiles = $this->request->getData('my_file');
+                        $pic_nm  = $common->prSavePic($path, $myFiles);
+                       
+
+                        if ($pic_nm[0] !== "" && $pic_nm[0]  !== null) {
+                            $j = 1;
+                            foreach ($pic_nm as $val) {
+                                if ($cpn_data[0]['thumbnail' . $j] !== "" && $cpn_data[0]['thumbnail' . $j] !== null) { //if not empty, assign new file name and delete old file
+                                    $searchParam['thumbnail' . $j] = $val;
+                                    if (file_exists($path . '/' . $cpn_data[0]['thumbnail' . $j])) {
+                                        unlink($path . '/' . $cpn_data[0]['thumbnail' . $j]);
+                                    }
+                                } else {
+                                    $searchParam['thumbnail' . $j] = $val;          //if EMPTY assign new file
+                                }
+                                $j++;
+                            }
+                        } else { //if pic_nm is empty
+                            $j = 1;
+                            foreach ($pic_nm as $val) {
+                                $searchParam['thumbnail' . $j] = $cpn_data[0]['thumbnail' . $j]; //assign current file to coupon
+                            }
                         }
 
-                        
+                        $common->updateCouponThumbnail('coupons', $unique_cp_val, $searchParam); //update thumbnail
+                        //------------------------------------------------THUMBNAIL---------------------------------------------------------------------
 
-                    } else { //--paid member 部分
+                        //coupons_usedにINSERTして
+                        foreach ($user_data as $val) {
 
+                            //insert in coupons_used here
+                            $common->insertCouponTrn(
+                                "coupons_used",
+                                $unique_cp_val,
+                                $val['user_cd'],
+                                $searchParam
+                            );
+                        }
+
+                    }else{ // PAID MEMBER 会員あれば
+
+                        $searchParam['updatetime']   = "now()";
+                        $searchParam['shop_cd']      = $shop_cd;
+                        //$searchParam['coupon_cd']    = $cpn_cd_1;
+                        $searchParam['effect_srt']   = str_replace("-", "", $searchParam['effect_srt']);
+                        $searchParam['effect_end']   = str_replace("-", "", $searchParam['effect_end']);
+
+                        //$searchParam['user_cd']      = $val['user_cd'];
+                        $searchParam['connect_kbn']  = '0';
+                        $searchParam['used']         = '0';
+                        $searchParam['prefecture']   = $searchParam['user_add'];
+                        $searchParam['age']          = $searchParam['age'];
+                        $searchParam['gender']       = $searchParam['gender'];
+                        $searchParam['birthday']     = $searchParam['birth_month'];
+                        $searchParam['rank']         = $searchParam['rank'];
+
+
+                        //　登録する---INSERT
+                        //$common->insertCouponData("mst0012", $searchParam, 1);   //OLD SHIT
+
+                        $unique_cp_valArr = $common->insertNEWCouponData("coupons", $searchParam, 1);  //1 for PAID member(paidmemberchecker)
+                        $unique_cp_val = $unique_cp_valArr[0]['currval'];
+
+                        //------------------------------------------------THUMBNAIL---------------------------------------------------------------------
+                        // 写真保存用のパスを設定する -------------if EDIT (unique_coupon_cd あり)
+                        //path for IMAGE
+                        $path    = CON_CPN_IMAGE . $shop_cd . '/' . $unique_cp_val;
+
+                        $myFiles = $this->request->getData('my_file');
+                        $pic_nm  = $common->prSavePic($path, $myFiles);  
+
+
+                        if ($pic_nm[0] !== "" && $pic_nm[0]  !== null) {
+                            $j = 1;
+                            foreach ($pic_nm as $val) {
+                                if ($cpn_data[0]['thumbnail' . $j] !== "" && $cpn_data[0]['thumbnail' . $j] !== null) { //if not empty, assign new file name and delete old file
+                                    $searchParam['thumbnail' . $j] = $val;
+                                    if (file_exists($path . '/' . $cpn_data[0]['thumbnail' . $j])) {
+                                        unlink($path . '/' . $cpn_data[0]['thumbnail' . $j]);
+                                    }
+                                } else {
+                                    $searchParam['thumbnail' . $j] = $val;          //if EMPTY assign new file
+                                }
+                                $j++;
+                            }
+                        } else { //if pic_nm is empty
+                            $j = 1;
+                            foreach ($pic_nm as $val) {
+                                $searchParam['thumbnail' . $j] = $cpn_data[0]['thumbnail' . $j]; //assign current file to coupon
+                            }
+                        }
+
+                        $common->updateCouponThumbnail('coupons', $unique_cp_val, $searchParam); //update thumbnail
+                        //------------------------------------------------THUMBNAIL---------------------------------------------------------------------
 
                         foreach ($user_data as $val) {
 
-
-                            $searchParam['insuser_cd']   = $shop_cd;
-                            $searchParam['insdatetime']  = "now()";
-                            $searchParam['upduser_cd']   = $shop_cd;
-                            $searchParam['updatetime']   = "now()";
-                            $searchParam['shop_cd']      = $shop_cd;
-                            $searchParam['coupon_cd']    = $cpn_cd_1;
-                            $searchParam['effect_srt']   = str_replace("-", "", $searchParam['effect_srt']);
-                            $searchParam['effect_end']   = str_replace("-", "", $searchParam['effect_end']);
-
-                            $searchParam['user_cd']      = $val['user_cd'];
-                            $searchParam['connect_kbn']  = '0';
-                            $searchParam['used']         = '0';
-                            $searchParam['prefecture']   = $searchParam['user_add'];
-                            $searchParam['age']          = $searchParam['age'];
-                            $searchParam['gender']       = $searchParam['gender'];
-                            $searchParam['birthday']     = $searchParam['birth_month'];
-                            $searchParam['rank']         = $searchParam['rank'];
-
-
-                            //　登録する---INSERT
-                            $common->insertCouponData("mst0012", $searchParam, 1); //1 for PAID member(paidmemberchecker)
-
+                            //insert coupons_used here
+                            $common->insertCouponTrn(
+                                "coupons_used",
+                                $unique_cp_val,
+                                $val['user_cd'],
+                                $searchParam
+                            );
                         }
                     }
                 } else { //check if COUPON_CD not NULL = update ALL ONCE 
+                    
+                    //------------------------------------------------THUMBNAIL---------------------------------------------------------------------
+                    // 写真保存用のパスを設定する -------------if EDIT (unique_coupon_cd あり)
+                    //path for IMAGE
+                    $path    = CON_CPN_IMAGE . $shop_cd . '/' . $couponChecker;
 
-                    $whereUpdate = " shop_cd = '" . $shop_cd . "' and coupon_cd ='" . $cpn_cd_1 . "'";
+                    $myFiles = $this->request->getData('my_file'); 
+                    $pic_nm  = $common->prSavePic($path, $myFiles); 
+
+
+                    if ($pic_nm[0] !== "" && $pic_nm[0]  !== null) {
+                        $j = 1;
+                        foreach ($pic_nm as $val) {
+                            if ($cpn_data[0]['thumbnail' . $j] !== "" && $cpn_data[0]['thumbnail' . $j] !== null) { //if not empty, assign new file name and delete old file
+                                $searchParam['thumbnail' . $j] = $val;
+                                if (file_exists($path . '/' . $cpn_data[0]['thumbnail' . $j])) {
+                                    unlink($path . '/' . $cpn_data[0]['thumbnail' . $j]);
+                                }
+                            } else {
+                                $searchParam['thumbnail' . $j] = $val;          //if EMPTY assign new file
+                            }
+                            $j++;
+                        }
+                    } else { //if pic_nm is empty
+                        $j = 1;
+                        foreach ($pic_nm as $val) {
+                            $searchParam['thumbnail' . $j] = $cpn_data[0]['thumbnail' . $j]; //assign current file to coupon
+                        }
+                    }
+                    //------------------------------------------------THUMBNAIL---------------------------------------------------------------------
+
+
+                    //$whereUpdate = " shop_cd = '" . $shop_cd . "' and coupon_cd ='" . $cpn_cd_1 . "'";
+                    $whereUpdate = " unique_coupon_cd =" . $couponChecker . " AND  shop_cd = '" . $shop_cd . "'";
+
 
                     if ($shop_data[0]['paidmember'] == 1) { //paid member UPDATE
 
@@ -367,13 +440,23 @@ class CouponController extends AppController
                         $searchParam['effect_end']   = str_replace("-", "", $searchParam['effect_end']);
 
 
-                        $common->updateCouponData("mst0012", $searchParam, $whereUpdate);
+                        //$common->updateCouponData("mst0012", $searchParam, $whereUpdate);   //OLD coupon table
+
+                        $common->updateCouponData("coupons", $searchParam, $whereUpdate);
+
+                        //=================================================================add COUPONS table update here
+
+
                     } else { //FREE  member UPDATE
 
                         $searchParam['effect_srt']   = str_replace("-", "", $searchParam['effect_srt']);
                         $searchParam['effect_end']   = str_replace("-", "", $searchParam['effect_end']);
 
-                        $common->updateCouponData("mst0012", $searchParam, $whereUpdate);
+                        //$common->updateCouponData("mst0012", $searchParam, $whereUpdate); //OLD coupon table
+
+                        $common->updateCouponData("coupons", $searchParam, $whereUpdate);
+
+                        //=================================================================add COUPONS table update here
                     }
                 }
             } //--END of button click SAVE
@@ -385,6 +468,8 @@ class CouponController extends AppController
                 ]
             );
         } //--END of if(POST) 
+
+
     } //--END of index() 
 
     private function prGetcouponData($shop_cd)
