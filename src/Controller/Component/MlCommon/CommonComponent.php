@@ -1988,10 +1988,10 @@ class CommonComponent
             $connection->execute($delCouponsSql);
 
             
-            $delCouponsUsedSql = " DELETE FROM public.coupons_used 
-                                    WHERE unique_coupon_cd=" . $unique_coupon_cd;
+            // $delCouponsUsedSql = " DELETE FROM public.coupons_used 
+            //                         WHERE unique_coupon_cd=" . $unique_coupon_cd;
              
-            $connection->execute($delCouponsUsedSql);
+            // $connection->execute($delCouponsUsedSql);
 
             $connection->commit();
         } catch (Exception $e) {

@@ -147,36 +147,8 @@ class GetMst0011Controller extends AppController
 
 
                     //==============================================COUPONS========================================================
-
-                    //get 過去 coupon データ
-                    $couponCDList = $this->getValidCouponCD('coupons'); //couponsテーブルから　unique_coupon_cd GET
-
-                    //get 今の持っているクーポンリスト 
-                    $nowCouponList = $this->getNowCouponCD('coupons_used', $user_cdSequence); 
-                    $nowCouponCdList = array_column($nowCouponList, 'unique_coupon_cd'); //convert into array with 1 index
-                   
-                  
-                    //coupons_used リストに　既にあるデータ消す
-                    foreach ($couponCDList as $key => $couponData) {
-                        if (in_array($couponData['unique_coupon_cd'], $nowCouponCdList)) {
-                            unset($couponCDList[$key]);
-                        }
-                    }
-
-                    //処理した　クーポンリストをINSERTする
-                    foreach ($couponCDList as $cpnData) {
-
-                        //insert to coupons_used
-                        $this->insertCouponData('coupons_used',
-                                                (int)$cpnData['unique_coupon_cd'],  //convert to INTEGER
-                                                $cpnData['updatetime'],
-                                                $user_cdSequence
-                                            );
-                    }
                     
-
-
-          
+                    //-------------削除しました　K(2023/04/28)
                     
                     //==============================================COUPONS========================================================
 

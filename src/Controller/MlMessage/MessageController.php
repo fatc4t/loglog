@@ -240,7 +240,7 @@ class MessageController extends AppController
 
                 $msg_cd_1 = sprintf("%06d", $msg_data[0]['msg_cd']);
 
-                foreach ($user_data as $val) {
+                foreach ($user_data as $val) { //what the fuck is this? 
                     // 削除条件
                     $where = " shop_cd = '" . $shop_cd . "' and msg_cd ='" . $msg_cd_1 . "'";
                     // 削除

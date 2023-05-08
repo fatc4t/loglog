@@ -44,47 +44,34 @@
         /*
          *
          */
-        public static function updateCouponUsed($table=NULL,$user_cd=NULL,$shop_cd=NULL,$coupon_cd=NULL){
+        public static function updateCouponUsed($table=NULL,$user_cd=NULL,$coupon_cd=NULL){
 
             $connection = ConnectionManager::get('default');
             // 条件
         
+            //old shit 2023/04/28
             // $sql   = "";
-            // $sql   .= "update";
-            // $sql   .= " mst0012 set used = '1' "; 
-            // $sql   .= " where user_cd = '".$user_cd."'";    
-            // $sql   .= " and shop_cd = '".$shop_cd."'";    
-            // $sql   .= " and coupon_cd = '".$coupon_cd."'";     
+            // $sql   .= "UPDATE ";
+            // $sql   .= " ".$table." SET used = 1 "; 
+            // $sql   .= " WHERE unique_coupon_cd = ".$coupon_cd." ";    
+            // $sql   .= " and user_cd = '".$user_cd."'";    
 
-
+            //unique_coupon_cd(coupon_cd), updatetime, user_cd, used
             $sql   = "";
-            $sql   .= "UPDATE ";
-            $sql   .= " ".$table." SET used = 1 "; 
-            $sql   .= " WHERE unique_coupon_cd = ".$coupon_cd." ";    
-            $sql   .= " and user_cd = '".$user_cd."'";    
+            $sql   .= "INSERT INTO  ";
+            $sql   .= " ".$table." (unique_coupon_cd, updatetime, user_cd, used ) "; 
+            $sql   .= " VALUES (".$coupon_cd.", now(), '".$user_cd."' , 1)";    
+   
  
             
             // SQLの実行
             $connection->execute($sql);
             $connection->commit();
+
+            return '1'; //return to アプリ側 
         }
 
-        public static function checkData ($table=NULL,$user_cd=NULL,$shop_cd=NULL,$coupon_cd=NULL){
 
-            $connection = ConnectionManager::get('default');
-            // 条件
-        
-            $sql   = "";
-            $sql   .= " SELECT used FROM ".$table. " ";
-            $sql   .= " WHERE unique_coupon_cd = '".$coupon_cd."' ";
-            $sql   .= " AND user_cd = '".$user_cd."'";    
-    
-     
-
-            // SQLの実行
-            $query = $connection->query($sql)->fetchAll('assoc');
-            return $query;
-        }
 
         public function index($user_cd = null) {
             
@@ -96,10 +83,10 @@
             $coupon_cd = $this->request->getQuery('coupon_cd');
             
             // Couponデータ
-            $this -> updateCouponUsed('coupons_used',$user_cd,$shop_cd,$coupon_cd); //update USED=1 mst0012
-            $result =  $this -> checkData('coupons_used',$user_cd,$shop_cd,$coupon_cd);          // return USED only 1 or 0
+            $result = $this -> updateCouponUsed('coupons_used',$user_cd,$coupon_cd); //INSERT INTO coupons_used // Return '1' for phone
+           
             
-            
+            $response = ['used' => $result];
             
             $this->set(compact('result'));
             // JSON で出力

@@ -315,17 +315,18 @@ class CouponController extends AppController
                         $common->updateCouponThumbnail('coupons', $unique_cp_val, $searchParam); //update thumbnail
                         //------------------------------------------------THUMBNAIL---------------------------------------------------------------------
 
+                        //old shit 2023/04/27
                         //coupons_usedにINSERTして
-                        foreach ($user_data as $val) {
+                        // foreach ($user_data as $val) {
 
-                            //insert in coupons_used here
-                            $common->insertCouponTrn(
-                                "coupons_used",
-                                $unique_cp_val,
-                                $val['user_cd'],
-                                $searchParam
-                            );
-                        }
+                        //     //insert in coupons_used here
+                        //     $common->insertCouponTrn(
+                        //         "coupons_used",
+                        //         $unique_cp_val,
+                        //         $val['user_cd'],
+                        //         $searchParam
+                        //     );
+                        // }
 
                     }else{ // PAID MEMBER 会員あれば
 
@@ -383,16 +384,17 @@ class CouponController extends AppController
                         $common->updateCouponThumbnail('coupons', $unique_cp_val, $searchParam); //update thumbnail
                         //------------------------------------------------THUMBNAIL---------------------------------------------------------------------
 
-                        foreach ($user_data as $val) {
+                        //old shit 2023/04/27
+                        // foreach ($user_data as $val) {
 
-                            //insert coupons_used here
-                            $common->insertCouponTrn(
-                                "coupons_used",
-                                $unique_cp_val,
-                                $val['user_cd'],
-                                $searchParam
-                            );
-                        }
+                        //     //insert coupons_used here
+                        //     $common->insertCouponTrn(
+                        //         "coupons_used",
+                        //         $unique_cp_val,
+                        //         $val['user_cd'],
+                        //         $searchParam
+                        //     );
+                        // }
                     }
                 } else { //check if COUPON_CD not NULL = update ALL ONCE 
                     

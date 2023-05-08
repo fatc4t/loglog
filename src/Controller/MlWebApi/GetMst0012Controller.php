@@ -48,66 +48,64 @@
         public static function prGetCouponData($table=NULL,$user_cd=NULL,$lat=null, $long=null){
 
             $connection = ConnectionManager::get('default');
-            // 条件
+            
+
+            //old shit 2023/04/27
+            // $sql   .= "
+            // SELECT coupons.shop_cd,  
+            // mst0010.shop_add1,  
+            // mst0010.shop_add2,  
+            // coupons.unique_coupon_cd as coupon_cd,  
+            // mst0010.shop_nm,  
+            // mst0010.category_cd,  
+            // coupons.coupon_goods,  
+            // coupons.effect_srt,  
+            // coupons.effect_end,  
+            // coupons.coupon_discount,
+            // mst0010.thumbnail1 as shopimage,  
+            // coupons.thumbnail1,  
+            // coupons.thumbnail2,  
+            // coupons.thumbnail3,  
+            // coupons.connect_kbn,  
+            // cpnTrn.used,  
+            // coupons.color,  
+            // coupons.visit_condition,  
+            // (ABS(GEO.longtitude::FLOAT-ABS(".$long."))+ABS(GEO.latitude::FLOAT-ABS(".$lat."))) as Proximity 
+            // from ".$table." left join coupons_used cpnTrn on cpnTrn.unique_coupon_cd = coupons.unique_coupon_cd 
+            // left join mst0010 on coupons.shop_cd = mst0010.shop_cd  
+            // left join geolocations GEO on GEO.shop_cd = mst0010.shop_cd 
+            // WHERE 
+            // cpnTrn.user_cd = '".$user_cd."' 
+            // and (effect_end >= to_char(Now(),'YYYYMMDD') 
+            // and to_char(Now(),'YYYYMMDD') >= effect_srt)  
+            // order by cpnTrn.used ASC,  proximity asc,   effect_srt DESC ";
         
-            // $sql   = "";
-            // $sql   .= "select";
-            // $sql   .= " mst0012.shop_cd, "; 
-            // $sql   .= " mst0010.shop_add1, "; 
-            // $sql   .= " mst0010.shop_add2, "; 
-            // $sql   .= " mst0012.coupon_cd, ";    
-            // $sql   .= " mst0010.shop_nm, ";    
-            // $sql   .= " mst0010.category_cd, ";    
-            // $sql   .= " mst0012.coupon_goods, ";    
-            // $sql   .= " mst0012.effect_srt, ";    
-            // $sql   .= " mst0012.effect_end, ";    
-            // $sql   .= " mst0012.coupon_discount, ";    
-            // $sql   .= " mst0012.thumbnail1, ";    
-            // $sql   .= " mst0012.thumbnail2, ";    
-            // $sql   .= " mst0012.thumbnail3, ";    
-            // $sql   .= " mst0012.connect_kbn, ";    
-            // $sql   .= " mst0012.used, ";  
-            // $sql   .= " mst0012.color, ";
-            // $sql   .= " mst0012.visit_condition, ";     
-            // $sql   .= " (ABS(GEO.longtitude::FLOAT-ABS(".$long."))+ABS(GEO.latitude::FLOAT-ABS(".$lat."))) as Proximity";             
-            // $sql   .= " from ".$table;
-            // $sql   .= " left join mst0010 on mst0012.shop_cd = mst0010.shop_cd ";
-            // $sql   .= " left join geolocations GEO on GEO.shop_cd = mst0010.shop_cd";
-            // $sql   .= " where user_cd = "."'".$user_cd."'";
-            // $sql   .= " and (effect_end >= to_char(Now(),'YYYYMMDD') and to_char(Now(),'YYYYMMDD') >= effect_srt) "; 
-            // $sql   .= " order by proximity asc,";
-            // $sql   .= " used ASC, ";  
-            // $sql   .= " effect_srt DESC ";  
 
 
 
             $sql   = "";
             $sql   .= "
-            SELECT coupons.shop_cd,  
-            mst0010.shop_add1,  
-            mst0010.shop_add2,  
-            coupons.unique_coupon_cd as coupon_cd,  
-            mst0010.shop_nm,  
-            mst0010.category_cd,  
-            coupons.coupon_goods,  
-            coupons.effect_srt,  
-            coupons.effect_end,  
-            coupons.coupon_discount,
-            mst0010.thumbnail1 as shopimage,  
-            coupons.thumbnail1,  
-            coupons.thumbnail2,  
-            coupons.thumbnail3,  
-            coupons.connect_kbn,  
-            cpnTrn.used,  
-            coupons.color,  
-            coupons.visit_condition,  
+            SELECT 
+            COALESCE(cpnTrn.used, 0) as used,
+            coupons.unique_coupon_cd as coupon_cd, 
+            coupons.shop_cd, mst0010.shop_add1, mst0010.shop_add2, 
+            mst0010.shop_nm, mst0010.category_cd, 
+            coupons.coupon_goods, coupons.effect_srt, coupons.effect_end, coupons.coupon_discount, 
+            mst0010.thumbnail1 as shopimage, coupons.thumbnail1, coupons.thumbnail2, coupons.thumbnail3, coupons.connect_kbn, 
+            coupons.color, 
+            coupons.visit_condition, 
             (ABS(GEO.longtitude::FLOAT-ABS(".$long."))+ABS(GEO.latitude::FLOAT-ABS(".$lat."))) as Proximity 
-            from ".$table." left join coupons_used cpnTrn on cpnTrn.unique_coupon_cd = coupons.unique_coupon_cd 
-            left join mst0010 on coupons.shop_cd = mst0010.shop_cd  
+            from ".$table." 
+            left join (select unique_coupon_cd, used from coupons_used where user_cd='".$user_cd."') cpnTrn 
+            on cpnTrn.unique_coupon_cd = coupons.unique_coupon_cd
+            left join mst0010 on coupons.shop_cd = mst0010.shop_cd 
             left join geolocations GEO on GEO.shop_cd = mst0010.shop_cd 
-            where cpnTrn.user_cd = '".$user_cd."' and (effect_end >= to_char(Now(),'YYYYMMDD') 
-            and to_char(Now(),'YYYYMMDD') >= effect_srt)  order by proximity asc, used ASC,  effect_srt DESC ";
+            WHERE 
+             (effect_end >= to_char(Now(),'YYYYMMDD') 
+            and to_char(Now(),'YYYYMMDD') >= effect_srt) 
+            order by cpnTrn.used desc,  proximity asc, effect_srt DESC";
 
+            
             
             // SQLの実行
             $query = $connection->query($sql)->fetchAll('assoc');
