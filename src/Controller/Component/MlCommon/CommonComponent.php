@@ -1192,7 +1192,7 @@ class CommonComponent
            R.shop_cd, 
             R.user_cd, S.shop_postcd, S.shop_add1, S.shop_add2, S.shop_add3, 
            S.shop_phone, S.opentime1, S.closetime1, S.opentime2, S.closetime2, S.url_hp, S.url_sns1, S.url_sns2, S.url_sns3, S.url_sns4, 
-           S.thumbnail1, S.thumbnail2, S.thumbnail3, S.goods, S.paidmember, S.holiday1, S.holiday2, S.holiday3, S.free_text 
+           S.thumbnail1, S.thumbnail2, S.thumbnail3, S.goods, S.paidmember, S.holiday1, S.holiday2, S.holiday3, S.free_text, R.liked
             FROM rooms R
             LEFT JOIN mst0010 S on R.shop_cd = S.shop_cd
             where R.user_cd='" . $user_cd . "' 

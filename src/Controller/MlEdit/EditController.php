@@ -133,19 +133,28 @@ class EditController extends AppController {
                 
                 //if no PIC = string(0) ""
 
-                //------------------------------------------------THUMBNAIL
-                if($pic_nm[0] !== "" && $pic_nm[0]  !== null){
-                    $j=1;
-                    foreach($pic_nm as $val){
-                        if($shop_data[0]['thumbnail'.$j] !== "" && $shop_data[0]['thumbnail'.$j] !== null){
-                            $searchParam['thumbnail'.$j] = $val;
-                            unlink($path.'/'.$shop_data[0]['thumbnail'.$j]);
-                        }else{
-                            $searchParam['thumbnail'.$j] = $shop_data[0]['thumbnail'.$j];
+                //------------------------------------------------THUMBNAIL---(clean)
+                if ($pic_nm[0] !== "" && $pic_nm[0]  !== null) {
+                    $j = 1;
+                    foreach ($pic_nm as $val) {
+                        if ($shop_data[0]['thumbnail' . $j] !== "" && $shop_data[0]['thumbnail' . $j] !== null) { //if not empty, assign new file name and delete old file
+                            $searchParam['thumbnail' . $j] = $val;
+                            if (file_exists($path . '/' . $shop_data[0]['thumbnail' . $j])) {
+                                unlink($path . '/' . $shop_data[0]['thumbnail' . $j]);
+                            }
+                        } else {
+                            $searchParam['thumbnail' . $j] = $val;          //if EMPTY assign new file
                         }
                         $j++;
                     }
+                } else { //if pic_nm is empty
+                    $j = 1;
+                    foreach ($pic_nm as $val) {
+                        $searchParam['thumbnail' . $j] = $shop_data[0]['thumbnail' . $j]; //assign current file to coupon
+                    }
                 }
+
+
                 //---------card image (fucking clean)
                 if ($pic_nm_card !== "" && $pic_nm_card !== null) {
                     if ($shop_data[0]['card_image'] !== "") {
@@ -219,7 +228,7 @@ class EditController extends AppController {
                 //バーコード区分 SET コード -----------KARL
                 //1:JAN13 2:JAN8 3:NW7 4:Code 39 5:Code 128
                 $barcodeCODE = $common->convertBarcodeCode($searchParam['barcodeType']);
-                $searchParam['barcodeType'] = $barcodeCODE;
+                $searchParam['barcode_kbn'] = $barcodeCODE;
                 
                 
 

@@ -5,6 +5,8 @@
      * @date      2023/02
      * @version   69
      * @note      
+     * 
+     * edit K(2023/05) - LIKE 機能
      */
 
     namespace App\Controller\MlWebApi;
@@ -54,13 +56,8 @@
                 $aryAddRow =  array(
                     'room_cd'		    =>strval($data['room_id']),
                     'datesent'		    =>$data['datesent'],  // messages テーブルから
-                    //'upduser_cd'		=>$data['upduser_cd'],
-                    //'updatetime'        =>$data['updatetime'],
                     'shop_cd'	        =>$data['shop_cd'],
                     'shop_nm'	        =>$data['shop_nm'],
-                    //'msg_cd'			=>$data['msg_cd'],
-                    //'msg_text'			=>$data['msg_text'], //change this K(23/04)
-                    //'connect_kbn'		=>$data['connect_kbn'],
                     'user_cd'			=>$data['user_cd'],	
                     'shop_postcd'		=>$data['shop_postcd'],	
                     'shop_add1'			=>$data['shop_add1'],
@@ -85,6 +82,7 @@
                     'holiday2'			=>$data['holiday2'],	
                     'holiday3'			=>$data['holiday3'],	
                     'free_text'			=>$data['free_text'],
+                    'liked'			    =>strval($data['liked']),
                     
                 );
 
