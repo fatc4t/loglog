@@ -152,113 +152,94 @@ class SignupController extends AppController
             $searchParam =  $this->getRequest()->getData();
             $this->set(compact('searchParam'));
 
-            // LOL authentication LMAO---not me
-            $phone = $this->prGetphoneData($searchParam);
+            // 写真保存用のパスを設定する
+            $path = CON_IMAGE . $shop_cd1;
 
-            if (!$phone) {
+            $myFiles = $this->request->getData('my_file');
+            $myFiles_logo = $this->request->getData('logo');           //カードロゴ
+            $pic_nm  = $common->prSavePic($path, $myFiles);
+            $pic_nm_cardLogo = $common->saveCardLogo($cardLogoPath, $myFiles_logo);    //card logo
 
-                // 写真保存用のパスを設定する
-                $path = CON_IMAGE . $shop_cd1;
+            $searchParam['thumbnail1'] = '';
+            $searchParam['thumbnail2'] = '';
+            $searchParam['thumbnail3'] = '';
+            $searchParam['logo']       = "";    //店舗カード LOGO
 
-                $myFiles = $this->request->getData('my_file');
-                $myFiles_logo = $this->request->getData('logo');           //カードロゴ
-                $pic_nm  = $common->prSavePic($path, $myFiles);
-                $pic_nm_cardLogo = $common->saveCardLogo($cardLogoPath, $myFiles_logo);    //card logo
-
-                //var_dump($pic_nm_cardLogo);exit;
-
-                $searchParam['thumbnail1'] = '';
-                $searchParam['thumbnail2'] = '';
-                $searchParam['thumbnail3'] = '';
-                $searchParam['logo']       = "";    //店舗カード LOGO
-
-                //------------------------------------------------THUMBNAIL the correct way
-                if ($pic_nm[0] !== "" && $pic_nm[0]  !== null) {
-                    $j = 1;
-                    foreach ($pic_nm as $val) {
-                        if ($shop_data[0]['thumbnail' . $j] !== "" && $shop_data[0]['thumbnail' . $j] !== null) { //if not empty, assign new file name and delete old file
-                            $searchParam['thumbnail' . $j] = $val;
-                            if (file_exists($path . '/' . $shop_data[0]['thumbnail' . $j])) {
-                                unlink($path . '/' . $shop_data[0]['thumbnail' . $j]);
-                            }
-                        } else {
-                            $searchParam['thumbnail' . $j] = $val;          //if EMPTY assign new file
+            //------------------------------------------------THUMBNAIL the correct way
+            if ($pic_nm[0] !== "" && $pic_nm[0]  !== null) {
+                $j = 1;
+                foreach ($pic_nm as $val) {
+                    if ($shop_data[0]['thumbnail' . $j] !== "" && $shop_data[0]['thumbnail' . $j] !== null) { //if not empty, assign new file name and delete old file
+                        $searchParam['thumbnail' . $j] = $val;
+                        if (file_exists($path . '/' . $shop_data[0]['thumbnail' . $j])) {
+                            unlink($path . '/' . $shop_data[0]['thumbnail' . $j]);
                         }
-                        $j++;
+                    } else {
+                        $searchParam['thumbnail' . $j] = $val;          //if EMPTY assign new file
                     }
-                } else { //if pic_nm is empty
-                    $j = 1;
-                    foreach ($pic_nm as $val) {
-                        $searchParam['thumbnail' . $j] = $shop_data[0]['thumbnail' . $j]; //assign current file to coupon
-                    }
+                    $j++;
                 }
-                //------------------------------------------------THUMBNAIL the correct way
-
-
-             
-                //----CARD LOGO K(2023/04)
-                if ($pic_nm_cardLogo !== "" && $pic_nm_cardLogo !== null) {
-                    $searchParam['logo']       = $pic_nm_cardLogo;
+            } else { //if pic_nm is empty
+                $j = 1;
+                foreach ($pic_nm as $val) {
+                    $searchParam['thumbnail' . $j] = $shop_data[0]['thumbnail' . $j]; //assign current file to coupon
                 }
-
-
-
-                $searchParam['insuser_cd']   = $shop_cd1;
-                $searchParam['insdatetime']  = $shop_data[0]['insdatetime'];
-                $searchParam['upduser_cd']   = $shop_cd1;
-                $searchParam['updatetime']   = "now()";
-                $searchParam['shop_cd']      = $shop_cd1;
-
-                //make BLANK. 設計くそ悪い
-                $searchParam['shop_group_cd']       = "";
-                $searchParam['special_point_cd']    = "";
-                $searchParam['card_image']          = "";
-                $searchParam['bar_schar']           = "";
-
-
-                //バーコード区分 SET コード -----------KARL
-                //1:JAN13 2:JAN8 3:NW7 4:Code 39 5:Code 128
-                $barcodeCODE = $common->convertBarcodeCode($searchParam['barcode_kbn']);
-                $searchParam['barcode_kbn'] = $barcodeCODE;
-
-
-
-                //　登録する
-                
-
-                //geolocation 登録 K(2023/03)
-                //-----------------------------------------------
-                $add1 = $searchParam['shop_add1'];
-                $add2 = $searchParam['shop_add2'];
-                $add3 = $searchParam['shop_add3'];
-                //-------------------------------------------------------------------------------------------------
-                //var_dump($shop_cdChecker);exit;
-                if (!$shop_cdChecker) { //if すでにあった場合
-                    $this->geolocationMake($shop_cd1, $add1, $add2, $add3, 1);
-                    $common->prSavedata("mst0010", $searchParam); //<---- save ALL
-                   
-                } 
-                else 
-                { //UPDATE geolocation
-                    $this->geolocationMake($shop_cd1, $add1, $add2, $add3, 0);
-                    $where = " shop_cd = '".$shop_cd1."'";
-                    $common->prUpdateEditdata("mst0010",$searchParam, $where);
-                    
-                }
-
-                //home 画面へパラメータを持って移動する                    
-                return $this->redirect(
-                    [
-                        'controller'  => '/Shoplist', 'action' => 'index', '?'      => [
-                            'shop_cd'  => $shop_cd
-                        ]
-                    ]
-                );
-            } else {
-                // NOP
-                $alert = "<script type='text/javascript'>alert('この電話番号は既に登録済みです。');</script>";
-                echo $alert;
             }
+            //------------------------------------------------THUMBNAIL the correct way
+
+
+
+            //----CARD LOGO K(2023/04)
+            if ($pic_nm_cardLogo !== "" && $pic_nm_cardLogo !== null) {
+                $searchParam['logo']       = $pic_nm_cardLogo;
+            }
+
+
+
+            $searchParam['insuser_cd']   = $shop_cd1;
+            $searchParam['insdatetime']  = $shop_data[0]['insdatetime'];
+            $searchParam['upduser_cd']   = $shop_cd1;
+            $searchParam['updatetime']   = "now()";
+            $searchParam['shop_cd']      = $shop_cd1;
+
+            //make BLANK. 設計くそ悪い
+            $searchParam['shop_group_cd']       = "";
+            $searchParam['special_point_cd']    = "";
+            $searchParam['card_image']          = "";
+            $searchParam['bar_schar']           = "";
+
+
+            //バーコード区分 SET コード -----------KARL
+            //1:JAN13 2:JAN8 3:NW7 4:Code 39 5:Code 128
+            $barcodeCODE = $common->convertBarcodeCode($searchParam['barcode_kbn']);
+            $searchParam['barcode_kbn'] = $barcodeCODE;
+
+
+            //geolocation 登録 K(2023/03)
+            //-----------------------------------------------
+            $add1 = $searchParam['shop_add1'];
+            $add2 = $searchParam['shop_add2'];
+            $add3 = $searchParam['shop_add3'];
+            //-------------------------------------------------------------------------------------------------
+            //var_dump($shop_cdChecker);exit;
+            if (!$shop_cdChecker) { //if すでにあった場合
+                $this->geolocationMake($shop_cd1, $add1, $add2, $add3, 1);
+                $common->prSavedata("mst0010", $searchParam); //<---- save ALL
+
+            } else { //UPDATE geolocation
+                $this->geolocationMake($shop_cd1, $add1, $add2, $add3, 0);
+                $where = " shop_cd = '" . $shop_cd1 . "'";
+                $common->prUpdateEditdata("mst0010", $searchParam, $where);
+            }
+
+            //home 画面へパラメータを持って移動する                    
+            return $this->redirect(
+                [
+                    'controller'  => '/Shoplist', 'action' => 'index', '?'      => [
+                        'shop_cd'  => $shop_cd
+                    ]
+                ]
+            );
         }
     }
     // private開始
@@ -284,31 +265,6 @@ class SignupController extends AppController
 
         return $query;
     }
-
-    /**
-     * prGetData method.【 電話番号検索 】
-     *
-     * @return void
-     */
-    private function prGetphoneData($searchParam)
-    {
-
-        $connection = ConnectionManager::get('default');
-
-        $sql    = "";
-        $sql   .= " select ";
-        $sql   .= " shop_phone as shop_phone ";
-        $sql   .= " from ";
-        $sql   .= " mst0010 ";
-        $sql   .= " where shop_phone = '" . $searchParam['shop_phone'] . "'";
-
-        // SQLの実行
-        $query = $connection->query($sql)->fetchAll('assoc');
-        $this->set(compact('query'));
-
-        return $query;
-    }
-
 
     /**
      * update geolocation method.【 店舗の現在地　更新 】
@@ -372,15 +328,12 @@ class SignupController extends AppController
 
         //INSERT to GEOLOCATION テーブル
         if ($insertChecker == 1) {
-            
+
             $common->insertLongLat($shop_cd, $longitude, $latitude, $fullShopAddr);
-            
         } else {
-            
+
             //UPDATE to GEOLOCATION テーブル
             $this->updateGeo($shop_cd, $longitude, $latitude, $fullShopAddr);
-            
-            
         }
     }
 }

@@ -1198,7 +1198,7 @@ class CommonComponent
             where R.user_cd='" . $user_cd . "' 
             and 
             (SELECT datesent FROM messages WHERE user_cd='" . $user_cd . "' and messages.room_id=R.room_id ORDER BY datesent DESC limit 1   ) is not NULL
-            order by datesent desc";
+            order by R.liked desc, datesent desc";
 
 
             // SQLの実行

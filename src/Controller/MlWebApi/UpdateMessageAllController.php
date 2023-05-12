@@ -288,7 +288,7 @@ class UpdateMessageAllController extends AppController
 
         try {
             $sql   = "";
-            $sql .= " SELECT user_cd  FROM " . $table . "  WHERE user_cd > '00018981'  order by user_cd asc";
+            $sql .= " SELECT user_cd  FROM " . $table . "  WHERE user_cd > '00019713'  order by user_cd asc limit 500";
 
 
 
