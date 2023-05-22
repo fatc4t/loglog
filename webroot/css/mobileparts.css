@@ -6,13 +6,20 @@ body{
 .home_image{
     max-width        : 100%;
     max-height       : 100px;
-    text-align       : center;
+    text-align       : left;
 }
 .parts_shopnm{
     overflow-wrap    : normal;
-    text-align       : center;
-    color            : #696969;
+    text-align       : left;
+    color            : #3e3d3d;
+    font-size        : 2px;
+    
 }
+
+.parts_shopnm h1 {
+    font-size: 30px; /* Adjust the value as per your preference */
+}
+
 .block_header {
     text-align       : left;
     color            : #696969;
@@ -35,6 +42,8 @@ body{
 .block_add {
     width            : 80%;
     text-align       : left;
+    padding-top: 0;
+    margin-top: 0;
 }
 .icon {
     width            : 30px;
@@ -44,10 +53,7 @@ body{
     border:1px solid #e72923;
 }
 
-.list{
-    list-style-type  :none;
-    padding-right    : 0; 
-}
+
 .tabs {
   margin-top         : 0.5px;
   padding-bottom     : 10px;
@@ -68,6 +74,48 @@ input[name="tab_item"] {
   max-width          : 100%;
   max-height         : 100%;
 }
+
+
+.block_sns .list {
+    padding-left: 0;
+}
+
+
+.block_img .tab_content {
+     text-align: left;
+     padding-left: 0;
+}
+
+
+
+/*------------------------------------------Coupon---------------------------*/
+.coupon .kanan {
+    border-left: 1px dashed #ddd;
+    width: 40% !important;
+    position:relative;
+}
+
+.coupon .kanan .info::after, .coupon .kanan .info::before {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: #dedede;
+    border-radius: 100%;
+}
+.coupon .kanan .info::before {
+    top: -10px;
+    left: -10px;
+}
+
+.coupon .kanan .info::after {
+    bottom: -10px;
+    left: -10px;
+}
+.coupon .time {
+    font-size: 1.6rem;
+}
+/*------------------------------------------Coupon---------------------------*/
 
 /*選択されているタブのコンテンツのみを表示*/
 #all:checked ~ #all_content,
@@ -98,8 +146,8 @@ input[name="tab_item"] {
         color            : black;          
     }
     .parts_shopnm{
-    font-size        : 8px;
-    text-align       : center;
+    font-size        : 5px;
+    text-align       : left;
     color            : #696969;
     }
     .block_info {
@@ -112,4 +160,3 @@ input[name="tab_item"] {
     }
 
 }
-

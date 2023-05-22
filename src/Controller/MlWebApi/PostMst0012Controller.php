@@ -46,15 +46,7 @@
          */
         public static function updateCouponUsed($table=NULL,$user_cd=NULL,$coupon_cd=NULL){
 
-            $connection = ConnectionManager::get('default');
-            // 条件
-        
-            //old shit 2023/04/28
-            // $sql   = "";
-            // $sql   .= "UPDATE ";
-            // $sql   .= " ".$table." SET used = 1 "; 
-            // $sql   .= " WHERE unique_coupon_cd = ".$coupon_cd." ";    
-            // $sql   .= " and user_cd = '".$user_cd."'";    
+            $connection = ConnectionManager::get('default');   
 
             //unique_coupon_cd(coupon_cd), updatetime, user_cd, used
             $sql   = "";

@@ -277,8 +277,6 @@ class CouponController extends AppController
                         $searchParam['background']   = "#ffffff";
                         $searchParam['color']        = "696969";
 
-                        //　登録する---INSERT
-                        //$common->insertCouponData("mst0012", $searchParam, 0); //old table
 
                         $unique_cp_valArr = $common->insertNEWCouponData("coupons", $searchParam, 0); //0 for FREE member(paidmemberchecker)
                         $unique_cp_val = $unique_cp_valArr[0]['currval'];
@@ -315,18 +313,6 @@ class CouponController extends AppController
                         $common->updateCouponThumbnail('coupons', $unique_cp_val, $searchParam); //update thumbnail
                         //------------------------------------------------THUMBNAIL---------------------------------------------------------------------
 
-                        //old shit 2023/04/27
-                        //coupons_usedにINSERTして
-                        // foreach ($user_data as $val) {
-
-                        //     //insert in coupons_used here
-                        //     $common->insertCouponTrn(
-                        //         "coupons_used",
-                        //         $unique_cp_val,
-                        //         $val['user_cd'],
-                        //         $searchParam
-                        //     );
-                        // }
 
                     }else{ // PAID MEMBER 会員あれば
 
@@ -383,18 +369,6 @@ class CouponController extends AppController
 
                         $common->updateCouponThumbnail('coupons', $unique_cp_val, $searchParam); //update thumbnail
                         //------------------------------------------------THUMBNAIL---------------------------------------------------------------------
-
-                        //old shit 2023/04/27
-                        // foreach ($user_data as $val) {
-
-                        //     //insert coupons_used here
-                        //     $common->insertCouponTrn(
-                        //         "coupons_used",
-                        //         $unique_cp_val,
-                        //         $val['user_cd'],
-                        //         $searchParam
-                        //     );
-                        // }
                     }
                 } else { //check if COUPON_CD not NULL = update ALL ONCE 
                     
@@ -441,9 +415,6 @@ class CouponController extends AppController
                         $searchParam['effect_srt']   = str_replace("-", "", $searchParam['effect_srt']);
                         $searchParam['effect_end']   = str_replace("-", "", $searchParam['effect_end']);
 
-
-                        //$common->updateCouponData("mst0012", $searchParam, $whereUpdate);   //OLD coupon table
-
                         $common->updateCouponData("coupons", $searchParam, $whereUpdate);
 
                         //=================================================================add COUPONS table update here
@@ -453,8 +424,6 @@ class CouponController extends AppController
 
                         $searchParam['effect_srt']   = str_replace("-", "", $searchParam['effect_srt']);
                         $searchParam['effect_end']   = str_replace("-", "", $searchParam['effect_end']);
-
-                        //$common->updateCouponData("mst0012", $searchParam, $whereUpdate); //OLD coupon table
 
                         $common->updateCouponData("coupons", $searchParam, $whereUpdate);
 

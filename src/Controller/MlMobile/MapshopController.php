@@ -75,12 +75,7 @@ class MapshopController extends AppController
         //---------------------------------
 
         $whereCpn  = "shop_cd = '".$shop_cd."'";
-        $whereCpn .= "and user_cd = '".$user_cd."'";
-        $whereCpn .= "and used = '0'";
-
-        $cpnData = $common->prGetData("mst0012",$whereCpn);
-
-        
+        $cpnData = $common->prGetData("coupons",$whereCpn);
 
         $visitC =''; //来店条件 counter
 
@@ -104,7 +99,6 @@ class MapshopController extends AppController
             }
         }
         $this->set(compact('cpnData')); //VIEWにCOUPONを投げる
-       print_r($cpnData);exit;
 
        $searchParam ="";
 
@@ -115,11 +109,14 @@ class MapshopController extends AppController
             $searchParam =  $this->getRequest()->getData();
             $this->set(compact('searchParam')); 
 
+            $unique_coupon_cd = $searchParam['unique_coupon_cd'];
 
-            $coupon_cd = $searchParam['coupon_cd'];
-            print_r($searchParam);exit;
+            print_r("<br>user_cd: ".$user_cd);
+            print_r("<br>unique_coupon_cd: ".$unique_coupon_cd);
+            exit;
 
-            $common->updateUsedCoupon($user_cd,$shop_cd, $coupon_cd);
+           //coupons_usedに　INSERTする
+           $common->insertCouponUsed('coupons_used',$user_cd,$unique_coupon_cd);
 
             return $this->redirect(
                 ['controller'  => '../MlMobile/Mapshop'
@@ -136,5 +133,6 @@ class MapshopController extends AppController
 
     
     }
+
 }
 ?>

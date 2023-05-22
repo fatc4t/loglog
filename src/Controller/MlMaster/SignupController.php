@@ -214,6 +214,9 @@ class SignupController extends AppController
             $barcodeCODE = $common->convertBarcodeCode($searchParam['barcode_kbn']);
             $searchParam['barcode_kbn'] = $barcodeCODE;
 
+            //重複電話番号チェック（新規）
+            $shopPhone = $this->checkNumber($searchParam['shop_phone']); //check phone number K(2023/05)
+
 
             //geolocation 登録 K(2023/03)
             //-----------------------------------------------
@@ -221,43 +224,67 @@ class SignupController extends AppController
             $add2 = $searchParam['shop_add2'];
             $add3 = $searchParam['shop_add3'];
             //-------------------------------------------------------------------------------------------------
-            //var_dump($shop_cdChecker);exit;
-            if (!$shop_cdChecker) { //if すでにあった場合
-                $this->geolocationMake($shop_cd1, $add1, $add2, $add3, 1);
-                $common->prSavedata("mst0010", $searchParam); //<---- save ALL
 
+            if (!$shop_cdChecker) { //if すでにあった場合
+
+
+                //電話番号チェック
+                if (!$shopPhone) {
+
+                    $this->geolocationMake($shop_cd1, $add1, $add2, $add3, 1);
+                    $common->prSavedata("mst0010", $searchParam); //<---- save ALL
+
+                    //home 画面へパラメータを持って移動する                    
+                    return $this->redirect(
+                        [
+                            'controller'  => '/Shoplist', 'action' => 'index', '?'      => [
+                                'shop_cd'  => $shop_cd
+                            ]
+                        ]
+                    );
+                } else {
+
+                    //同じだったら エラーを表示する
+                    $alert = "<script type='text/javascript'>alert('この電話番号は既に登録済みです。');</script>";
+                    echo $alert;
+                }
             } else { //UPDATE geolocation
+
+
                 $this->geolocationMake($shop_cd1, $add1, $add2, $add3, 0);
                 $where = " shop_cd = '" . $shop_cd1 . "'";
                 $common->prUpdateEditdata("mst0010", $searchParam, $where);
-            }
 
-            //home 画面へパラメータを持って移動する                    
-            return $this->redirect(
-                [
-                    'controller'  => '/Shoplist', 'action' => 'index', '?'      => [
-                        'shop_cd'  => $shop_cd
+                //home 画面へパラメータを持って移動する                    
+                return $this->redirect(
+                    [
+                        'controller'  => '/Shoplist', 'action' => 'index', '?'      => [
+                            'shop_cd'  => $shop_cd
+                        ]
                     ]
-                ]
-            );
+                );
+            }
         }
     }
-    // private開始
+
     /**
-     * prGetData method.【 データ検索 】
-     *
-     * @return void
+     * 電話番号あるかどうかチェック
+     * 
+     * K(2023/05)
+     * @return user_phone
      */
-    private function prGetshopData()
+    private function checkNumber($shop_phone)
     {
 
         $connection = ConnectionManager::get('default');
 
         $sql   = "";
-        $sql   .= "select ";
-        $sql   .= " max(shop_cd) as shop_cd ";
-        $sql   .= "from ";
+        $sql   .= "SELECT ";
+        $sql   .= " shop_phone ";
+        $sql   .= "FROM ";
         $sql   .= "mst0010 ";
+        $sql   .= "WHERE shop_phone = '" . $shop_phone . "' ";
+
 
         // SQLの実行
         $query = $connection->query($sql)->fetchAll('assoc');
@@ -288,7 +315,7 @@ class SignupController extends AppController
 
 
         // SQLの実行
-        $connection->query($sql)->fetchAll('assoc');
+        $connection->execute($sql);
     }
 
     /**

@@ -150,7 +150,7 @@ class MessageController extends AppController
             // 写真保存用のパスを設定する
             $path = "../webroot/img/Message/" . $shop_cd;
 
-            
+
 
             $myFiles = $this->request->getData('my_file');
             $pic_nm  = $common->prSavePic($path, $myFiles);
@@ -246,43 +246,43 @@ class MessageController extends AppController
                     // 削除
                     $common->prDeletedata("mst0013", $where);
                 }
-                foreach ($user_data as $val) {
 
-                    if ($shop_data[0]['paidmember'] == 0) {
 
-                        $searchParam['insuser_cd']   = $shop_cd;
-                        $searchParam['insdatetime']  = "now()";
-                        $searchParam['upduser_cd']   = $shop_cd;
-                        $searchParam['updatetime']   = "now()";
-                        $searchParam['shop_cd']      = $shop_cd;
-                        $searchParam['msg_cd']       = $msg_cd_1;
-                        $searchParam['user_cd']      = $val['user_cd'];
-                        $searchParam['connect_kbn']  = '0';
-                        $searchParam['prefecture']   = NULL;
-                        $searchParam['age ']         = NULL;
-                        $searchParam['gender']       = NULL;
-                        $searchParam['birthday']     = NULL;
-                        $searchParam['rank']         = NULL;
-                        $searchParam['background']   = "#ffffff";
-                        $searchParam['color']        = "696969";
-                    } else {
-                        $searchParam['insuser_cd']   = $shop_cd;
-                        $searchParam['insdatetime']  = "now()";
-                        $searchParam['upduser_cd']   = $shop_cd;
-                        $searchParam['updatetime']   = "now()";
-                        $searchParam['shop_cd']      = $shop_cd;
-                        $searchParam['msg_cd']       = $msg_cd_1;
-                        $searchParam['user_cd']      = $val['user_cd'];
-                        $searchParam['connect_kbn']  = '0';
-                        $searchParam['prefecture']   = $searchParam['user_add'];
-                        $searchParam['age']          = $searchParam['age'];
-                        $searchParam['gender']       = $searchParam['gender'];
-                        $searchParam['birthday']     = $searchParam['birth_month'];
-                        $searchParam['rank']         = $searchParam['rank'];
-                    }
-                    //　登録する
-                    $common->prSavedata("mst0013", $searchParam);
+                if ($shop_data[0]['paidmember'] == 0) {
+
+                    $searchParam['insuser_cd']   = $shop_cd;
+                    $searchParam['insdatetime']  = "now()";
+                    $searchParam['upduser_cd']   = $shop_cd;
+                    $searchParam['updatetime']   = "now()";
+                    $searchParam['shop_cd']      = $shop_cd;
+                    $searchParam['msg_cd']       = $msg_cd_1;
+                    $searchParam['user_cd']      = "";
+                    $searchParam['connect_kbn']  = '0';
+                    $searchParam['prefecture']   = NULL;
+                    $searchParam['age ']         = NULL;
+                    $searchParam['gender']       = NULL;
+                    $searchParam['birthday']     = NULL;
+                    $searchParam['rank']         = NULL;
+                    $searchParam['background']   = "#ffffff";
+                    $searchParam['color']        = "696969";
+                } else {
+                    $searchParam['insuser_cd']   = $shop_cd;
+                    $searchParam['insdatetime']  = "now()";
+                    $searchParam['upduser_cd']   = $shop_cd;
+                    $searchParam['updatetime']   = "now()";
+                    $searchParam['shop_cd']      = $shop_cd;
+                    $searchParam['msg_cd']       = $msg_cd_1;
+                    $searchParam['user_cd']      = "";
+                    $searchParam['connect_kbn']  = '0';
+                    $searchParam['prefecture']   = $searchParam['user_add'];
+                    $searchParam['age']          = $searchParam['age'];
+                    $searchParam['gender']       = $searchParam['gender'];
+                    $searchParam['birthday']     = $searchParam['birth_month'];
+                    $searchParam['rank']         = $searchParam['rank'];    
                 }
+
+                //　登録する
+                $common->prSavedata("mst0013", $searchParam); //1 INSERT in mst0013 ONLY
 
                 //--------Message ALL メッセージ機能 under POST ----------------------------------------------------KARL　2023/02
                 $msgContent = $searchParam['msg_text']; //GET TEXTAREA データ

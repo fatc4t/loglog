@@ -49,7 +49,7 @@ class CommonComponent
         }
     }
     /**
-     * prSavePic method.【 データ取得 】
+     * 【 データ取得 】
      * param : コード 
      * @return void
      */
@@ -87,7 +87,7 @@ class CommonComponent
         return $query;
     }
     /**
-     * prSavePic method.【 データ取得 】
+     * 【 データ取得 】
      * param : コード 
      * @return void
      */
@@ -122,7 +122,7 @@ class CommonComponent
         return $query;
     }
     /**
-     * prSavePic method.【 データ取得 】
+     *  データ取得 】
      * param : コード 
      * @return void
      */
@@ -164,7 +164,7 @@ class CommonComponent
     }
 
     /**
-     * prSavePic method.【 MAXデータ取得 】
+     *  MAXデータ取得 】
      * param : コード 
      * @return void
      */
@@ -189,7 +189,7 @@ class CommonComponent
         return $query;
     }
     /**
-     * prSavePic method.【 MAXデータ取得 】
+     * 【 MAXデータ取得 】
      * param : コード 
      * @return void
      */
@@ -254,7 +254,7 @@ class CommonComponent
 
                 // JPEG, PNG, GIF, BMP, WBMP, GD2 をサポートするようビルドされている場合、 イメージの種類は自動的に判別される
                 $source = imagecreatefromstring(file_get_contents($file));
-                imagecopyresized($newimage, $source, 0, 0, 0, 0, $nwidth, $nheight, $width, $height);
+                imagecopyresampled($newimage, $source, 0, 0, 0, 0, $nwidth, $nheight, $width, $height); //image resizing with OK 比率
                 imagejpeg($newimage, $path1 . $file_name[$j], 30);
 
 
@@ -1461,7 +1461,7 @@ class CommonComponent
             FROM rooms r
             WHERE r.shop_cd = '" . $shop_cd . "'";
 
-            //print_r($sqlInsert);exit;
+
 
             // SQLの実行
             $connection->query($sqlInsert)->fetchAll('assoc');
@@ -1486,10 +1486,11 @@ class CommonComponent
         '" . $shop_cd . "', 
         '" . $long . "', 
         '" . $lat . "', 
-        '" . $fullShopAddr . "')";
+        '" . $fullShopAddr . "') 
+        ON CONFLICT (shop_cd) DO NOTHING";
 
         // SQLの実行
-        $connection->query($sql)->fetchAll('assoc');
+        $connection->execute($sql);
     }
 
     /**
@@ -1856,12 +1857,8 @@ class CommonComponent
 
             $user_cd = $connection->query($sql)->fetchAll('assoc'); //RETURN SEQUENCE user_cd
 
-            
+
             return $user_cd;
-
- 
-
-
         } catch (Exception $e) {
             $this->Flash->error($e);
             $connection->rollback();
@@ -1984,13 +1981,13 @@ class CommonComponent
             $delCouponsSql = " DELETE FROM public.coupons
                                 WHERE unique_coupon_cd=" . $unique_coupon_cd . " 
                                 AND shop_cd='" . $shop_cd . "'";
-            
+
             $connection->execute($delCouponsSql);
 
-            
+
             // $delCouponsUsedSql = " DELETE FROM public.coupons_used 
             //                         WHERE unique_coupon_cd=" . $unique_coupon_cd;
-             
+
             // $connection->execute($delCouponsUsedSql);
 
             $connection->commit();
@@ -2026,6 +2023,36 @@ class CommonComponent
             $connection->execute($sql);
 
             $connection->commit();
+        } catch (Exception $e) {
+            $this->Flash->error($e);
+            $connection->rollback();
+        }
+    }
+
+
+    /**
+     * Mapでクーポンを使用する
+     * K(2023/05)
+     * @return void
+     * @param table,user?cd,unique_coupon_cd
+     */
+    public static function insertCouponUsed($table, $user_cd, $unique_coupon_cd)
+    {
+
+        $connection = ConnectionManager::get('default');
+
+        try {
+
+            //unique_coupon_cd(coupon_cd), updatetime, user_cd, used
+            $sql   = "";
+            $sql   .= "INSERT INTO  ";
+            $sql   .= " " . $table . " (unique_coupon_cd, updatetime, user_cd, used ) ";
+            $sql   .= " VALUES (" . $unique_coupon_cd . ", now(), '" . $user_cd . "' , 1)";
+
+            // SQLの実行
+            $connection->execute($sql);
+            $connection->commit();
+
         } catch (Exception $e) {
             $this->Flash->error($e);
             $connection->rollback();

@@ -10,12 +10,6 @@
     <form method="post">
         <input type="hidden" name="_csrfToken" autocomplete="off" value="<?= $this->request->getAttribute('csrfToken') ?>">
         <br />
-        <div class="block_header">
-            <div class="parts_shopnm">
-                <h1 style="overflow-wrap: normal"><?= h($shop_data[0]['shop_nm']) ?></h1>
-            </div>
-        </div>
-        <hr size="5" width="100%" color="#e72923">
         <div class="block_img">
             <div class="tabs">
                 <?php if ($shop_data[0]['thumbnail1'] != "") { ?>
@@ -43,23 +37,53 @@
                         <img class="home_image" src="../webroot/img/Home/<?= h($shop_data[0]['shop_cd']) ?>/<?= h($shop_data[0]['thumbnail3']) ?>" />
                     <?php } ?>
                 </div>
-
-
-
             </div>
+        </div>
+        <hr size="5" width="100%" color="#e72923">
+        <div class="block_header">
+            <div class="parts_shopnm">
+                <h1><?= h($shop_data[0]['shop_nm']) ?></h1>
+            </div>
+        </div>
+        <div class="block_sns">
+                <ul class="list">
+                    <?php if ($shop_data[0]['url_hp'] == '') { ?>
+                        <img style="opacity: 0.5;" class="icon" src="../webroot/img/home.png" />
+                    <?php } else { ?>
+                        <a href="<?= h($shop_data[0]['url_hp']) ?>" target="_blank" rel="norefferrer"><img class="icon" src="../webroot/img/home.png" /> </a>
+                    <?php } ?>
+                    <?php if ($shop_data[0]['url_sns1'] == '') { ?>
+                        <img style="opacity: 0.5;" class="icon" src="../webroot/img/line.png" />
+                    <?php } else { ?>
+                        <a href="<?= h($shop_data[0]['url_sns1']) ?>" target="_blank" rel="norefferrer"><img class="icon" src="../webroot/img/line.png" /> </a>
+                    <?php } ?>
+                    <?php if ($shop_data[0]['url_sns2'] == '') { ?>
+                        <img style="opacity: 0.5;" class="icon" src="../webroot/img/instagram.png" />
+                    <?php } else { ?>
+                        <a href="<?= h($shop_data[0]['url_sns2']) ?>" target="_blank" rel="norefferrer"><img class="icon" src="../webroot/img/instagram.png" /> </a>
+                    <?php } ?>
+                    <?php if ($shop_data[0]['url_sns3'] == '') { ?>
+                        <img style="opacity: 0.5;" class="icon" src="../webroot/img/twitter.jpg" />
+                    <?php } else { ?>
+                        <a href="<?= h($shop_data[0]['url_sns3']) ?>" target="_blank" rel="norefferrer"><img class="icon" src="../webroot/img/twitter.jpg" /> </a>
+                    <?php } ?>
+                </ul>
+
         </div>
         <div class="block_info">
             <div class="block_add">
                 <p></p>
                 <?php
                 if ($shop_data[0]['url_sns4']) { ?>
-                    <br />
+                    
                     <a href="<?= h($shop_data[0]['url_sns4']) ?>" target="_blank" rel="norefferrer">Google Mapで表示</a>
                 <?php } ?>
 
-                <p style="height: 100%">〒<?= h($shop_data[0]['shop_postcd']) ?> <br />
-                    <?= h($shop_data[0]['shop_add1']) ?><?= h($shop_data[0]['shop_add2']) ?><?= h($shop_data[0]['shop_add3']) ?><br />
-                    TEL　<?= h($shop_data[0]['shop_phone']) ?><br />
+                <p style="height: 100%">
+                <img style="opacity: 0.5;" class="icon" src="../webroot/img/yellowpin.png" />〒<?= h($shop_data[0]['shop_postcd']) ?><br /> 
+                <?= h($shop_data[0]['shop_add1']) ?><?= h($shop_data[0]['shop_add2']) ?><?= h($shop_data[0]['shop_add3']) ?><br />
+                <img style="opacity: 0.5;" class="icon" src="../webroot/img/yellowphone.png" />TEL　<?= h($shop_data[0]['shop_phone']) ?><br />
+                <img style="opacity: 0.5;" class="icon" src="../webroot/img/yellowclock.png" />
                     <?php
                     $opentime1 = '';
                     $opentime2 = '';
@@ -80,37 +104,7 @@
                     if ($raiten) { ?>
                         <?= h(substr($raiten[0]['raiten_time'], 0, 16)) . "に来店しました。" ?>
                     <?php } ?>
-                    <!--                <br />
-                <a href="http://www.facebook.com/share.php?u=http://153.126.145.215/loglog/MlMobile/Mapshop?shop_cd=<?= h($shop_data[0]['shop_cd']) ?>" class="sns-btn -fb">Facebookでシェアする</a>
-                <br />
-                <a href="https://twitter.com/intent/tweet?url=http://153.126.145.215/loglog/MlMobile/Mapshop?shop_cd=<?= h($shop_data[0]['shop_cd']) ?>"  class="sns-btn -tw">Twitterでシェアする</a>-->
                 </p>
-            </div>
-            <div class="block_sns">
-                <ul class="list">
-                    <?php if ($shop_data[0]['url_hp'] == '') { ?>
-                        <li><img style="opacity: 0.5;" class="icon" src="../webroot/img/home.png" /></li>
-                    <?php } else { ?>
-                        <li><a href="<?= h($shop_data[0]['url_hp']) ?>" target="_blank" rel="norefferrer"><img class="icon" src="../webroot/img/home.png" /> </a></li>
-                    <?php } ?>
-                    <?php if ($shop_data[0]['url_sns1'] == '') { ?>
-                        <li><img style="opacity: 0.5;" class="icon" src="../webroot/img/line.png" /></li>
-                    <?php } else { ?>
-                        <li><a href="<?= h($shop_data[0]['url_sns1']) ?>" target="_blank" rel="norefferrer"><img class="icon" src="../webroot/img/line.png" /> </a></li>
-                    <?php } ?>
-                    <?php if ($shop_data[0]['url_sns2'] == '') { ?>
-                        <li><img style="opacity: 0.5;" class="icon" src="../webroot/img/instagram.png" /></li>
-                    <?php } else { ?>
-                        <li><a href="<?= h($shop_data[0]['url_sns2']) ?>" target="_blank" rel="norefferrer"><img class="icon" src="../webroot/img/instagram.png" /> </a></li>
-                    <?php } ?>
-                    <?php if ($shop_data[0]['url_sns3'] == '') { ?>
-                        <li><img style="opacity: 0.5;" class="icon" src="../webroot/img/twitter.jpg" /></li>
-                    <?php } else { ?>
-                        <li><a href="<?= h($shop_data[0]['url_sns3']) ?>" target="_blank" rel="norefferrer"><img class="icon" src="../webroot/img/twitter.jpg" /> </a></li>
-                    <?php } ?>
-
-                </ul>
-
             </div>
         </div>
 
@@ -146,14 +140,7 @@
                                                 </span>
                                             </div>
 
-                                            <button class="useButton btn btn-sm btn-outline-danger btn-block" type="submit" id="<?= h($data['coupon_cd']) ?>">利用</button>
-
-                                            <!-- ---------------------------------------------------hidden----------------------------------------------- -->
-                                            <input id="coupon_goods" type="hidden" name="coupon_goods" value="<?= h($data['coupon_goods']) ?>">
-                                            <input id="coupon_discount" type="hidden" name="coupon_discount" value="<?= h($data['coupon_discount']) ?>">
-                                            <input id="effect_srt" type="hidden" name="effect_srt" value="<?= h($data['effect_srt']) ?>">
-                                            <input id="effect_end" type="hidden" name="effect_end" value="<?= h($data['effect_end']) ?>">
-                                            <input id="coupon_cd" type="hidden" name="coupon_cd" value="<?= h($data['coupon_cd']) ?>">
+                                            <button class="useButton btn btn-sm btn-outline-danger btn-block" type="input" id="<?= h($data['unique_coupon_cd']) ?>">利用</button>
                                         </div>
                                     </div>
                                 </div>
@@ -185,7 +172,15 @@
 
 
         $(".useButton").on("click", function() {
-            var coupon_cd = $(this).attr('id');
-            document.getElementById("coupon_cd").value = coupon_cd;
+            var unique_coupon_cd = $(this).attr('id');
+            alert(unique_coupon_cd);
+
+            var hiddenInput = document.createElement("input");
+            hiddenInput.setAttribute("type", "hidden");
+            hiddenInput.setAttribute("name", "unique_coupon_cd");
+            hiddenInput.setAttribute("value", unique_coupon_cd);
+        
+            $("#MapshopForm").append(hiddenInput);
+
         });
     </script>
