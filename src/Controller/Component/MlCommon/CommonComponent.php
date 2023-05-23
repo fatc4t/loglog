@@ -313,7 +313,7 @@ class CommonComponent
 
             // JPEG, PNG, GIF, BMP, WBMP, GD2 をサポートするようビルドされている場合、 イメージの種類は自動的に判別される
             $source = imagecreatefromstring(file_get_contents($files));
-            imagecopyresized($newimage, $source, 0, 0, 0, 0, $nwidth, $nheight, $width, $height);
+            imagecopyresampled($newimage, $source, 0, 0, 0, 0, $nwidth, $nheight, $width, $height);
             imagejpeg($newimage, $path1 . $file_name, 30);
 
 
@@ -2034,7 +2034,7 @@ class CommonComponent
      * Mapでクーポンを使用する
      * K(2023/05)
      * @return void
-     * @param table,user?cd,unique_coupon_cd
+     * @param table,user_cd,unique_coupon_cd
      */
     public static function insertCouponUsed($table, $user_cd, $unique_coupon_cd)
     {

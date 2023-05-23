@@ -12,12 +12,12 @@ body{
     overflow-wrap    : normal;
     text-align       : left;
     color            : #3e3d3d;
-    font-size        : 2px;
+    
     
 }
 
 .parts_shopnm h1 {
-    font-size: 30px; /* Adjust the value as per your preference */
+    font-size: 23px; /* Adjust the value as per your preference */
 }
 
 .block_header {
@@ -40,7 +40,7 @@ body{
     font-size        : 15px;
 }
 .block_add {
-    width            : 80%;
+    width            : 95%;
     text-align       : left;
     padding-top: 0;
     margin-top: 0;

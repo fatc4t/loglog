@@ -57,15 +57,24 @@ class SignupController extends AppController
         // 共通のComponentを呼び出す
         $common = new CommonComponent();
 
-        $path        = "";
-        $cardLogoPath = CON_IMAGE_Logo . $shop_cd;    //('../webroot/img/CardLogo/')
-
-        $pic_nm      = [];
-
         // urlから店舗コードを取得する
         $shop_cd  = '0001';
         $shop_cd1 = $this->request->getQuery('shop_cd1');
         $shop_cdChecker = $this->request->getQuery('shop_cd1');
+
+        $path        = "";
+        $cardLogoPath = CON_IMAGE_Logo;
+        
+        //('../webroot/img/CardLogo/')
+        if($shop_cd1){
+            $cardLogoPath = CON_IMAGE_Logo. $shop_cd1;   
+        }else{
+            $cardLogoPath = CON_IMAGE_Logo. $shop_cd;    
+        }
+
+      
+
+        $pic_nm      = [];
 
         if ($shop_cd1) {
             // DBより店舗情報を取得

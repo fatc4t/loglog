@@ -83,6 +83,11 @@ class MapshopController extends AppController
             $visitC     =$data['visit_condition'];
 
 
+
+            //USED チェック
+            //$common->
+
+
             if($visitC !== '' || $visitC !== NULL){
                 //trnRaitenCheck
                 $countCheck  = $common->trnRaitenCheck($user_cd, $shop_cd,$data['effect_srt'],$data['effect_end']);
@@ -95,8 +100,10 @@ class MapshopController extends AppController
                    
                 }
                 //if  count >= visitC -> そのまま
-
             }
+
+
+            
         }
         $this->set(compact('cpnData')); //VIEWにCOUPONを投げる
 
@@ -111,9 +118,6 @@ class MapshopController extends AppController
 
             $unique_coupon_cd = $searchParam['unique_coupon_cd'];
 
-            print_r("<br>user_cd: ".$user_cd);
-            print_r("<br>unique_coupon_cd: ".$unique_coupon_cd);
-            exit;
 
            //coupons_usedに　INSERTする
            $common->insertCouponUsed('coupons_used',$user_cd,$unique_coupon_cd);

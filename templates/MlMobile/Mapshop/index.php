@@ -81,7 +81,7 @@
 
                 <p style="height: 100%">
                 <img style="opacity: 0.5;" class="icon" src="../webroot/img/yellowpin.png" />〒<?= h($shop_data[0]['shop_postcd']) ?><br /> 
-                <?= h($shop_data[0]['shop_add1']) ?><?= h($shop_data[0]['shop_add2']) ?><?= h($shop_data[0]['shop_add3']) ?><br />
+                <?= h($shop_data[0]['shop_add1']) ?><?= h($shop_data[0]['shop_add2']) ?><br /> <?= h($shop_data[0]['shop_add3']) ?><br />
                 <img style="opacity: 0.5;" class="icon" src="../webroot/img/yellowphone.png" />TEL　<?= h($shop_data[0]['shop_phone']) ?><br />
                 <img style="opacity: 0.5;" class="icon" src="../webroot/img/yellowclock.png" />
                     <?php
@@ -109,6 +109,7 @@
         </div>
 
         <!-- -----------------------------------------coupon block------------------------------------- -->
+        <!-- <hr size="5" width="100%" color="#e72923">
         <div class="couponblock">
 
             <?php foreach ($cpnData as $data) { ?>
@@ -139,7 +140,8 @@
                                                     <span></span>
                                                 </span>
                                             </div>
-
+                                            <br>
+                                            
                                             <button class="useButton btn btn-sm btn-outline-danger btn-block" type="input" id="<?= h($data['unique_coupon_cd']) ?>">利用</button>
                                         </div>
                                     </div>
@@ -151,7 +153,7 @@
             <?php } ?>
 
 
-        </div>
+        </div> -->
 
     </form>
     <?php echo $this->Form->end() ?>

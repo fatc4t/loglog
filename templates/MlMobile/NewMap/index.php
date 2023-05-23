@@ -116,7 +116,7 @@
             L.marker([lat, lon],{icon: L.icon({iconUrl:"/loglog/webroot/img/mappin_ittabasho_35.png",iconAnchor:[15,15]})}).addTo(map).on('click', function (e) {    
                   popup
                       .setLatLng(e.latlng)
-                      .setContent("<iframe class = 'frame_size' scrolling='no' allowtransparency='true' frameborder='0' src= 'http://192.168.2.48/loglog/MlMobile/mapshop?shop_cd="+shop_cd+"&user_cd="+user_cd+"'>店舗詳細</iframe>" )
+                      .setContent("<iframe class = 'frame_size' scrolling='yes' allowtransparency='true' frameborder='0' src= 'http://192.168.2.48/loglog/MlMobile/mapshop?shop_cd="+shop_cd+"&user_cd="+user_cd+"'>店舗詳細</iframe>" )
                       .openOn(map);
             });
         }
@@ -127,7 +127,7 @@
             L.marker([lat, lon],{icon: L.icon({iconUrl:"/loglog/webroot/img/mappin_kameiten.png",iconAnchor:[15,15]})}).addTo(map).on('click', function (e) {    
                   popup
                       .setLatLng(e.latlng)
-                      .setContent("<iframe class = 'frame_size' scrolling='no' allowtransparency='true' frameborder='0' src= 'http://192.168.2.48/loglog/MlMobile/mapshop?shop_cd="+shop_cd+"&user_cd="+user_cd+"'>店舗詳細</iframe>" )
+                      .setContent("<iframe class = 'frame_size' scrolling='yes' allowtransparency='true' frameborder='0' src= 'http://192.168.2.48/loglog/MlMobile/mapshop?shop_cd="+shop_cd+"&user_cd="+user_cd+"'>店舗詳細</iframe>" )
                       .openOn(map);
             });
         }
