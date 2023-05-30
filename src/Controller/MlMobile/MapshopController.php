@@ -74,18 +74,21 @@ class MapshopController extends AppController
         //coupon 表示する
         //---------------------------------
 
-        $whereCpn  = "shop_cd = '".$shop_cd."'";
+        $whereCpn  = "shop_cd = '".$shop_cd."' AND   (effect_end >= to_char(Now(),'YYYYMMDD') AND to_char(Now(),'YYYYMMDD') >= effect_srt) ";
         $cpnData = $common->prGetData("coupons",$whereCpn);
 
         $visitC =''; //来店条件 counter
 
         foreach($cpnData as $key => $data){
             $visitC     =$data['visit_condition'];
-
-
+             
 
             //USED チェック
-            //$common->
+            $usedCheck = $common->couponCheckused('coupons_used', $data['unique_coupon_cd']);
+
+            if($usedCheck){
+                unset($cpnData[$key]);
+            }
 
 
             if($visitC !== '' || $visitC !== NULL){
@@ -110,7 +113,7 @@ class MapshopController extends AppController
        $searchParam ="";
 
         //クーポン使用時
-        if ($this->getRequest()->is('post')) {
+        if ($this->getRequest()->is('post')) { exit;
 
             //get page data
             $searchParam =  $this->getRequest()->getData();

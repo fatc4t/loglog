@@ -99,7 +99,7 @@
                                 <tr class="table_tr">
                                     <td align=left width=10%><?= h($rows['shop_cd']); ?></td>
                                     <td align=left width=20%><?= h($rows['shop_nm']); ?></td>
-                                    <td align=left width=30%>http://153.126.145.215/loglog/MlLogin/Login?shop_cd=<?= h($rows['shop_cd']) ?></td>
+                                    <td align=left width=30%>http://loglog.biz/loglog/MlLogin/Login?shop_cd=<?= h($rows['shop_cd']) ?></td>
                                     <td align=left width=10%><?= h($rows['shop_phone']); ?></td>
                                     <td align=left width=10%><?= h($rows['shop_pw']) ?></td>   
                                     <td width=10%>

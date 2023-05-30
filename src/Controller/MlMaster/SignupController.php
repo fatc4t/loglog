@@ -74,7 +74,8 @@ class SignupController extends AppController
 
       
 
-        $pic_nm      = [];
+        $pic_nm             = [];
+        $pic_nm_cardLogo    = [];
 
         if ($shop_cd1) {
             // DBより店舗情報を取得
@@ -195,12 +196,16 @@ class SignupController extends AppController
                 }
             }
             //------------------------------------------------THUMBNAIL the correct way
-
-
+            
 
             //----CARD LOGO K(2023/04)
             if ($pic_nm_cardLogo !== "" && $pic_nm_cardLogo !== null) {
                 $searchParam['logo']       = $pic_nm_cardLogo;
+                if (file_exists($path . '/' . $shop_data[0]['thumbnail' . $j])) {
+                    unlink($path . '/' . $shop_data[0]['thumbnail' . $j]);
+                }
+            }else{
+                $searchParam['logo']  = $shop_data[0]['logo']; 
             }
 
 

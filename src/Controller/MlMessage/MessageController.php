@@ -229,10 +229,6 @@ class MessageController extends AppController
                     $whereU .= " and gender = '" . $searchParam['gender'] . "' ";
                 }
 
-                //add this for Private message----------------------------------------------------------------------------
-                //$whereU .= " and user_cd='00000541' ";
-                //print_r($whereU);exit;
-
                 // 対象のユーザーを取得する
                 $user_data = $common->prGetData("mst0011", $whereU, NULL, NULL);
                 $this->set(compact('user_data'));
@@ -240,12 +236,12 @@ class MessageController extends AppController
 
                 $msg_cd_1 = sprintf("%06d", $msg_data[0]['msg_cd']);
 
-                foreach ($user_data as $val) { //what the fuck is this? 
-                    // 削除条件
-                    $where = " shop_cd = '" . $shop_cd . "' and msg_cd ='" . $msg_cd_1 . "'";
-                    // 削除
-                    $common->prDeletedata("mst0013", $where);
-                }
+                // foreach ($user_data as $val) { //what the fuck is this? 
+                //     // 削除条件
+                //     $where = " shop_cd = '" . $shop_cd . "' and msg_cd ='" . $msg_cd_1 . "'";
+                //     // 削除
+                //     $common->prDeletedata("mst0013", $where);
+                // }
 
 
                 if ($shop_data[0]['paidmember'] == 0) {
@@ -281,6 +277,9 @@ class MessageController extends AppController
                     $searchParam['rank']         = $searchParam['rank'];    
                 }
 
+
+
+                if(!$msg_cd){ 
                 //　登録する
                 $common->prSavedata("mst0013", $searchParam); //1 INSERT in mst0013 ONLY
 
@@ -293,10 +292,20 @@ class MessageController extends AppController
 
                 //PUT content to messagesテーブル
                 $common->announceMessage($shop_cd, $msgContent);
+                
+                }else{
+                    //UPDATE - 更新
+                    $prevMSGtext = $msg_data[0]['msg_text'];
+                    $whereUpdateMst0013 = "";
+                    $whereUpdateMessages = "";
+                    $whereUpdateMst0013 .= " shop_cd='".$shop_cd."' AND msg_text='".$prevMSGtext."'";
+                    $whereUpdateMessages .= " shop_cd='".$shop_cd."' AND content='".$prevMSGtext."'";
+ 
+                    $common->updateMessages('mst0013', $searchParam, $whereUpdateMst0013);
+                    $common->updateMessages('messages', $searchParam, $whereUpdateMessages);
 
-
-                //--------Message ALL メッセージ機能 under POST ----------------------------------------------------KARL　2023/02
-
+                    exit;
+                }
 
                 return $this->redirect(
                     [
@@ -331,4 +340,5 @@ class MessageController extends AppController
 
         return $query;
     }
+
 }

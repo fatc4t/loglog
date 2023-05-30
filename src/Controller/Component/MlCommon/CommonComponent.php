@@ -371,7 +371,7 @@ class CommonComponent
 
             // JPEG, PNG, GIF, BMP, WBMP, GD2 をサポートするようビルドされている場合、 イメージの種類は自動的に判別される
             $source = imagecreatefromstring(file_get_contents($files));
-            imagecopyresized($newimage, $source, 0, 0, 0, 0, $nwidth, $nheight, $width, $height);
+            imagecopyresampled($newimage, $source, 0, 0, 0, 0, $nwidth, $nheight, $width, $height);
             imagejpeg($newimage, $path1 . $file_name, 30);
 
 
@@ -2058,4 +2058,106 @@ class CommonComponent
             $connection->rollback();
         }
     }
+
+    /**
+     * 使用したクーポン　「チェック」
+     * K(2023/05)
+     * @param user_cd
+     * @return unique_coupon_cd
+     */
+    public static function couponCheckused($table, $user_cd)
+    {
+        // トランザクション
+        $connection = ConnectionManager::get('default');
+
+        
+
+        try {
+            $uniqueCDList = "";
+            $sql = "";
+
+            $sql .= " SELECT unique_coupon_cd FROM ".$table." WHERE user_cd='".$user_cd."'";
+
+            
+            $uniqueCDList = $connection->query($sql)->fetchAll('assoc');
+
+            return $uniqueCDList;
+
+        } catch (Exception $e) {
+            $this->Flash->error($e);
+            $connection->rollback();
+        }
+    }
+
+    /**
+     * メッセージ内容GET　「チェック」
+     * K(2023/05)
+     * @param shop_cd,msg_cd
+     * @return msg_text
+     */
+    public static function messageContentGet($table, $shop_cd, $msg_cd)
+    {
+        // トランザクション
+        $connection = ConnectionManager::get('default');
+
+        try {
+            $content = "";
+
+            $sql = "";
+            $sql .= " SELECT distinct msg_text FROM ".$table." WHERE shop_cd='".$shop_cd."' AND msg_cd='".$msg_cd."'";;
+
+            
+            $content = $connection->query($sql)->fetchAll('assoc');
+
+            return $content;
+
+        } catch (Exception $e) {
+            $this->Flash->error($e);
+            $connection->rollback();
+        }
+    }
+
+        /**
+     * UPDATE method.【 更新 】Message側　SHOP- EDIT
+     * KARL 2023/05
+     * @param 
+     * @return void
+     */
+    public static function updateMessages($table, $searchParam, $where = NULL)
+    {
+        // 
+        date_default_timezone_set('Asia/Tokyo');
+        // トランザクション
+        $connection = ConnectionManager::get('default');
+
+        if ($where) {
+            $where = " where " . $where;
+        }
+        try {
+            // UPDATE mst0013
+            if($table === "mst0013"){
+            $sql  = " UPDATE public." . $table . " SET ";
+            $sql .= "msg_text             = '".$searchParam['msg_text']."', ";
+            $sql .= "updatetime          = now() ";
+
+            $sql .= " " . $where . " ";
+
+            }else if($table === "messages"){
+                $sql = " UPDATE public." . $table . " SET ";
+                $sql .= "content          = '".$searchParam['msg_text']."', ";
+                $sql .= "seen             = 0";
+    
+                $sql .= " " . $where . " ";
+            }
+
+
+
+            $connection->execute($sql);
+            $connection->commit();
+        } catch (Exception $e) {
+            $this->Flash->error($e);
+            $connection->rollback();
+        }
+    }
+
 }

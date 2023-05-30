@@ -92,10 +92,17 @@ class RMsgController extends AppController {
                 } else if($searchParam['btn_click_name'] == CON_DELETE){
                     $delshopcd = $shop_cd;
                     $delmsgcd  = $searchParam['msg_cd'];
+                    $delContent = $common->messageContentGet('mst0013', $delshopcd, $delmsgcd); //messages テーブルのメッセージ内容
+                    $delText = $delContent[0]['msg_text'];
 
                     $whereD  = " shop_cd = '".$delshopcd."'";
                     $whereD .= " and msg_cd = '".$delmsgcd."'";
                     $common->prDeletedata("mst0013",$whereD);
+
+                    //messsagesテーブル　削除
+                    $whereM = " shop_cd = '".$delshopcd."'";
+                    $whereM .= " and content = '".$delText."'";
+                    $common->prDeletedata("messages",$whereM);
     
                     return $this->redirect(
                      ['controller'  => '../MlRMsg/RMsg'

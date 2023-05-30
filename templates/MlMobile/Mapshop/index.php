@@ -1,6 +1,17 @@
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+    <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"> -->
 
+
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+
+    <?php
+    // Clear cache
+    header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+    header("Cache-Control: post-check=0, pre-check=0", false);
+    header("Pragma: no-cache");
+    ?>
 
     <?php echo $this->Html->css('mobileparts'); ?>
     <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no" />
@@ -13,13 +24,16 @@
         <div class="block_img">
             <div class="tabs">
                 <?php if ($shop_data[0]['thumbnail1'] != "") { ?>
-                    <input id="all" type="radio" name="tab_item" checked>
+                    <input id="all" type="radio" name="tab_item" checked hidden>
+                    
                 <?php } ?>
                 <?php if ($shop_data[0]['thumbnail2'] != "") { ?>
-                    <input id="programming" type="radio" name="tab_item">
+                    <input id="programming" type="radio" name="tab_item" hidden>
+                   
                 <?php } ?>
                 <?php if ($shop_data[0]['thumbnail3'] != "") { ?>
-                    <input id="design" type="radio" name="tab_item">
+                    <input id="design" type="radio" name="tab_item" hidden>
+                    
                 <?php } ?>
 
                 <div class="tab_content" id="all_content">
@@ -46,56 +60,65 @@
             </div>
         </div>
         <div class="block_sns">
-                <ul class="list">
-                    <?php if ($shop_data[0]['url_hp'] == '') { ?>
-                        <img style="opacity: 0.5;" class="icon" src="../webroot/img/home.png" />
-                    <?php } else { ?>
-                        <a href="<?= h($shop_data[0]['url_hp']) ?>" target="_blank" rel="norefferrer"><img class="icon" src="../webroot/img/home.png" /> </a>
-                    <?php } ?>
-                    <?php if ($shop_data[0]['url_sns1'] == '') { ?>
-                        <img style="opacity: 0.5;" class="icon" src="../webroot/img/line.png" />
-                    <?php } else { ?>
-                        <a href="<?= h($shop_data[0]['url_sns1']) ?>" target="_blank" rel="norefferrer"><img class="icon" src="../webroot/img/line.png" /> </a>
-                    <?php } ?>
-                    <?php if ($shop_data[0]['url_sns2'] == '') { ?>
-                        <img style="opacity: 0.5;" class="icon" src="../webroot/img/instagram.png" />
-                    <?php } else { ?>
-                        <a href="<?= h($shop_data[0]['url_sns2']) ?>" target="_blank" rel="norefferrer"><img class="icon" src="../webroot/img/instagram.png" /> </a>
-                    <?php } ?>
-                    <?php if ($shop_data[0]['url_sns3'] == '') { ?>
-                        <img style="opacity: 0.5;" class="icon" src="../webroot/img/twitter.jpg" />
-                    <?php } else { ?>
-                        <a href="<?= h($shop_data[0]['url_sns3']) ?>" target="_blank" rel="norefferrer"><img class="icon" src="../webroot/img/twitter.jpg" /> </a>
-                    <?php } ?>
-                </ul>
+            <ul class="list">
+                <?php
+                if ($shop_data[0]['url_sns4']) { ?>
+                    <a href="<?= h($shop_data[0]['url_sns4']) ?>" target="_blank" rel="norefferrer"><img class="icon" src="../webroot/img/googlemap.png" /> </a>
+                <?php } ?>
+
+                <?php if ($shop_data[0]['url_sns1'] == '') { ?>
+                    <img style="opacity: 0.5;" class="icon" src="../webroot/img/line.png" />
+                <?php } else { ?>
+                    <a href="<?= h($shop_data[0]['url_sns1']) ?>" target="_blank" rel="norefferrer"><img class="icon" src="../webroot/img/line.png" /> </a>
+                <?php } ?>
+
+                <?php if ($shop_data[0]['url_sns2'] == '') { ?>
+                    <img style="opacity: 0.5;" class="icon" src="../webroot/img/instagram.png" />
+                <?php } else { ?>
+                    <a href="<?= h($shop_data[0]['url_sns2']) ?>" target="_blank" rel="norefferrer"><img class="icon" src="../webroot/img/instagram.png" /> </a>
+                <?php } ?>
+
+
+                <?php if ($shop_data[0]['url_sns3'] == '') { ?>
+                    <img style="opacity: 0.5;" class="icon" src="../webroot/img/twitter.jpg" />
+                <?php } else { ?>
+                    <a href="<?= h($shop_data[0]['url_sns3']) ?>" target="_blank" rel="norefferrer"><img class="icon" src="../webroot/img/twitter.jpg" /> </a>
+                <?php } ?>
+
+
+                <?php if ($shop_data[0]['url_hp'] == '') { ?>
+                    <img style="opacity: 0.5;" class="icon" src="../webroot/img/home.png" />
+                <?php } else { ?>
+                    <a href="<?= h($shop_data[0]['url_hp']) ?>" target="_blank" rel="norefferrer"><img class="icon" src="../webroot/img/home.png" /> </a>
+                <?php } ?>
+
+            </ul>
 
         </div>
         <div class="block_info">
             <div class="block_add">
-                <p></p>
-                <?php
-                if ($shop_data[0]['url_sns4']) { ?>
-                    
-                    <a href="<?= h($shop_data[0]['url_sns4']) ?>" target="_blank" rel="norefferrer">Google Mapで表示</a>
-                <?php } ?>
 
-                <p style="height: 100%">
-                <img style="opacity: 0.5;" class="icon" src="../webroot/img/yellowpin.png" />〒<?= h($shop_data[0]['shop_postcd']) ?><br /> 
-                <?= h($shop_data[0]['shop_add1']) ?><?= h($shop_data[0]['shop_add2']) ?><br /> <?= h($shop_data[0]['shop_add3']) ?><br />
-                <img style="opacity: 0.5;" class="icon" src="../webroot/img/yellowphone.png" />TEL　<?= h($shop_data[0]['shop_phone']) ?><br />
-                <img style="opacity: 0.5;" class="icon" src="../webroot/img/yellowclock.png" />
+                <p style="height: 100%" class="maximize-paragraph">
+                    <img class="icon" src="../webroot/img/address.svg" id="pinMark" />〒<?= h($shop_data[0]['shop_postcd']) ?><br />
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?= h($shop_data[0]['shop_add1']) ?><?= h($shop_data[0]['shop_add2']) ?><br />
+                    <?php
+                    if ($shop_data[0]['shop_add3'] != null || $shop_data[0]['shop_add3']  != "") { ?>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?= h($shop_data[0]['shop_add3']) ?><br />
+                    <?php } ?>
+                    <img class="icon" src="../webroot/img/time.svg" id="timeMark" />
                     <?php
                     $opentime1 = '';
                     $opentime2 = '';
                     if ($shop_data[0]['opentime1']) {
-                        $opentime1 = $shop_data[0]['opentime1'] . '～' . $shop_data[0]['closetime1'];
+                        $opentime1 = trim($shop_data[0]['opentime1']) . '~' . trim($shop_data[0]['closetime1']);
                     }
                     if ($shop_data[0]['opentime2']) {
-                        $opentime2 = $shop_data[0]['opentime2'] . '～' . $shop_data[0]['closetime2'];
+                        $opentime2 = trim($shop_data[0]['opentime2']) . '~' . trim($shop_data[0]['closetime2']);
                     }
                     ?>
-                    営業時間 ：<?= h($opentime1) ?>　<?= h($opentime2) ?><br />
-                    定休日：<?= h($shop_data[0]['holiday1']) ?>　<?= h($shop_data[0]['holiday2']) ?>　<?= h($shop_data[0]['holiday3']) ?><br /><br />
+                    <?= h(trim($opentime1)) ?>　<?= h(trim($opentime2)) ?><br />
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;定休日:<?= h($shop_data[0]['holiday1']) ?>　<?= h($shop_data[0]['holiday2']) ?>　<?= h($shop_data[0]['holiday3']) ?><br />
+                    <img class="icon" src="../webroot/img/telephone.svg" id="phoneMark" /><?= h($shop_data[0]['shop_phone']) ?><br /><br />
                     <?php
                     if ($shop_data[0]['free_text']) { ?>
                         <?= h($shop_data[0]['free_text']) ?>
@@ -109,8 +132,13 @@
         </div>
 
         <!-- -----------------------------------------coupon block------------------------------------- -->
-        <!-- <hr size="5" width="100%" color="#e72923">
-        <div class="couponblock">
+        <hr size="5" width="100%" color="#e72923">
+
+
+
+
+
+        <!-- <div class="couponblock">
 
             <?php foreach ($cpnData as $data) { ?>
                 <div class="container my-5">
@@ -141,7 +169,7 @@
                                                 </span>
                                             </div>
                                             <br>
-                                            
+
                                             <button class="useButton btn btn-sm btn-outline-danger btn-block" type="input" id="<?= h($data['unique_coupon_cd']) ?>">利用</button>
                                         </div>
                                     </div>
@@ -151,9 +179,61 @@
                     </div>
                 </div>
             <?php } ?>
-
-
         </div> -->
+
+
+        <!-- <div class="couponblock">
+            <div class="container content">
+                <div id="carousel-example-generic" class="carousel slide" data-ride="carousel"> -->
+        <!--Indicators -->
+        <!-- <ol class="carousel-indicators">
+                    <li data-target="#carousel-example-generic" data-slide-to="0" class="active"></li>
+                    <li data-target="#carousel-example-generic" data-slide-to="1"></li>
+                    <li data-target="#carousel-example-generic" data-slide-to="2"></li>
+                </ol> Wrapper for slides -->
+        <!-- <div class="carousel-inner">
+                        <?php $counter = 0; ?>
+                        <?php foreach ($cpnData as $data) { ?>
+                            <div class="item<?php if ($counter === 0) {
+                                                echo ' active';
+                                            } ?>">
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <div class="thumbnail adjust1">
+                                            <div class="col-md-2 col-sm-2 col-xs-12"> <img class="media-object img-rounded img-responsive" src="../webroot/img/Coupon/<?= h($data['shop_cd']) ?>/<?= h($data['thumbnail1']) ?>">
+                                            </div>
+                                            <div class="col-md-10 col-sm-10 col-xs-12">
+                                                <div class="caption">
+                                                    <p class="text-info lead adjust2"><?= h($data['coupon_goods']) ?></p>
+                                                    <p><?= h($data['effect_srt']) ?>～<?= h($data['effect_end']) ?></p>
+                                                    <blockquote class="adjust2">
+                                                        <p><?= h($data['coupon_discount']) ?></p><cite title="Source Title">
+                                                            <button class="useButton btn btn-sm btn-outline-danger btn-block" type="input" id="<?= h($data['unique_coupon_cd']) ?>">利用</button></cite></small>
+                                                    </blockquote>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <?php $counter++; ?>
+                        <?php } ?>
+
+                    </div> -->
+        <!-- Controls  -->
+        <!-- <?php if ($cpnData) { ?>
+                        <a class="left carousel-control" href="#carousel-example-generic" data-slide="prev"><span class="glyphicon glyphicon-chevron-left"></span></a>
+                        <a class="right carousel-control" href="#carousel-example-generic" data-slide="next"> <span class="glyphicon glyphicon-chevron-right"></span></a>
+                    <?php } ?>
+                </div>
+            </div>
+        </div> -->
+
+
+
+
+
+
 
     </form>
     <?php echo $this->Form->end() ?>
@@ -181,7 +261,7 @@
             hiddenInput.setAttribute("type", "hidden");
             hiddenInput.setAttribute("name", "unique_coupon_cd");
             hiddenInput.setAttribute("value", unique_coupon_cd);
-        
+
             $("#MapshopForm").append(hiddenInput);
 
         });

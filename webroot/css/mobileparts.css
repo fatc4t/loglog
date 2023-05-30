@@ -1,78 +1,88 @@
-
-body{
-    margin           : 0px;
+body {
+    margin: 0px;
 }
 
-.home_image{
-    max-width        : 100%;
-    max-height       : 100px;
-    text-align       : left;
+.home_image {
+    max-width: 100%;
+    max-height: 100px;
+    text-align: left;
 }
-.parts_shopnm{
-    overflow-wrap    : normal;
-    text-align       : left;
-    color            : #3e3d3d;
-    
-    
+
+.parts_shopnm {
+    overflow-wrap: normal;
+    text-align: left;
+    color: #3e3d3d;
+
+
 }
 
 .parts_shopnm h1 {
-    font-size: 23px; /* Adjust the value as per your preference */
+    font-size: 23px;
+    /* Adjust the value as per your preference */
 }
 
 .block_header {
-    text-align       : left;
-    color            : #696969;
-    background       : white;
-    height           : 10%;
+    text-align: left;
+    color: #696969;
+    background: white;
+    height: 10%;
 }
+
 .block_img {
-    text-align       : left;
-    color            : #696969;
-    background       : white;   
+    text-align: left;
+    color: #696969;
+    background: white;
 }
+
 .block_info {
-    text-align       : left;
-    display          : flex;
-    background       : white;
-    color            : #696969; 
-    width            : 100%;
-    font-size        : 15px;
+    text-align: left;
+    display: flex;
+    background: white;
+    color: #000000;
+    width: 120%;
+    font-size: 15px;
+    font-weight: bold;
+    flex-grow: 1; /* Allow the element to grow and take up available space */
+    flex-basis: 0; /* Reset the initial basis value */
 }
+
 .block_add {
-    width            : 95%;
-    text-align       : left;
+    width: 100%;
+    text-align: left;
     padding-top: 0;
     margin-top: 0;
 }
+
 .icon {
-    width            : 30px;
-    height           : 30px;
+    width: 30px;
+    height: 30px;
 }
-.line{
-    border:1px solid #e72923;
+
+.line {
+    border: 1px solid #e72923;
 }
 
 
 .tabs {
-  margin-top         : 0.5px;
-  padding-bottom     : 10px;
-  text-align         : center;
+    margin-top: 0.5px;
+    padding-bottom: 10px;
+    text-align: center;
 }
 
 
 input[name="tab_item"] {
-  display            : float;
+    display: float;
 }
+
 /*タブ切り替えの中身のスタイル*/
 .tab_content {
-  display            : none;
-  padding-left       : 25%;
-  padding-right      : 25%;
-  clear              : both;
-  overflow           : hidden;
-  max-width          : 100%;
-  max-height         : 100%;
+    display: none;
+    padding-left: 25%;
+    padding-right: 25%;
+    clear: both;
+    overflow: hidden;
+    max-width: 100%;
+    max-height: 100%;
 }
 
 
@@ -82,20 +92,33 @@ input[name="tab_item"] {
 
 
 .block_img .tab_content {
-     text-align: left;
-     padding-left: 0;
+    text-align: left;
+    padding-left: 0;
 }
 
+
+p.maximize-paragraph {
+    margin: 0;
+    padding: 0;
+    width: 130%;
+  }
+
+  #pinMark, #phoneMark, #timeMark {
+    width: 20px; /* Adjust the width as desired */
+    height: 20px; /* Adjust the height as desired */
+  }
+  
 
 
 /*------------------------------------------Coupon---------------------------*/
 .coupon .kanan {
     border-left: 1px dashed #ddd;
     width: 40% !important;
-    position:relative;
+    position: relative;
 }
 
-.coupon .kanan .info::after, .coupon .kanan .info::before {
+.coupon .kanan .info::after,
+.coupon .kanan .info::before {
     content: '';
     position: absolute;
     width: 20px;
@@ -103,6 +126,7 @@ input[name="tab_item"] {
     background: #dedede;
     border-radius: 100%;
 }
+
 .coupon .kanan .info::before {
     top: -10px;
     left: -10px;
@@ -112,51 +136,114 @@ input[name="tab_item"] {
     bottom: -10px;
     left: -10px;
 }
+
 .coupon .time {
     font-size: 1.6rem;
 }
+
 /*------------------------------------------Coupon---------------------------*/
 
+/*------------------------------------------CAROUSEL---------------------------*/
+.carousel-indicators .active {
+    background: #31708f;
+}
+
+.content {
+    margin-top: 20px;
+}
+
+.adjust1 {
+    float: left;
+    width: 100%;
+    margin-bottom: 0;
+}
+
+.adjust2 {
+    margin: 0;
+}
+
+.carousel-indicators li {
+    border: 1px solid #ccc;
+}
+
+.carousel-control {
+    color: #31708f;
+    width: 5%;
+}
+
+.carousel-control:hover,
+.carousel-control:focus {
+    color: #31708f;
+}
+
+.carousel-control.left,
+.carousel-control.right {
+    background-image: none;
+}
+
+.media-object {
+    margin: auto;
+    margin-top: 15%;
+}
+
+@media screen and (max-width: 768px) {
+    .media-object {
+        margin-top: 0;
+    }
+}
+/*------------------------------------------CAROUSEL---------------------------*/
+
+
+
 /*選択されているタブのコンテンツのみを表示*/
-#all:checked ~ #all_content,
-#programming:checked ~ #programming_content,
-#design:checked ~ #design_content {
-  display: block;
+#all:checked~#all_content,
+#programming:checked~#programming_content,
+#design:checked~#design_content {
+    display: block;
 }
 
 /*選択されているタブのスタイルを変える*/
-.tabs input:checked + .tab_item {
-  background-color   : #5ab4bd;
-  color              : #fff;
+.tabs input:checked+.tab_item {
+    background-color: #5ab4bd;
+    color: #fff;
 }
-   /*携帯対応*/
+
+/*携帯対応*/
 @media screen and (max-width: 480px) {
     .block_info {
-        text-align       : left;
-        display          : flex;
-        background       : white;
-        color            : #696969; 
-        width            : 100%;
-        font-size        : 15px;
-    }
-/*携帯対応*/
-@media screen and (max-width: 280px) {
-    .block {
-        text-align       : left;
-        color            : black;          
-    }
-    .parts_shopnm{
-    font-size        : 5px;
-    text-align       : left;
-    color            : #696969;
-    }
-    .block_info {
-    text-align       : left;
-    display          : flex;
-    background       : white;
-    color            : #696969; 
-    width            : 100%;
-    font-size        : 13px;
+        text-align: left;
+        display: flex;
+        background: white;
+        color: #696969;
+        width: 120%;
+        font-size: 15px;
+        flex-grow: 1; /* Allow the element to grow and take up available space */
+        flex-basis: 0; /* Reset the initial basis value */
     }
 
+    /*携帯対応*/
+    @media screen and (max-width: 280px) {
+        .block {
+            text-align: left;
+            color: black;
+        }
+
+        .parts_shopnm {
+            font-size: 5px;
+            text-align: left;
+            color: #696969;
+        }
+
+        .block_info {
+            text-align: left;
+            display: flex;
+            background: white;
+            color: #696969;
+            width: 120%;
+            font-size: 13px;
+            flex-grow: 1; /* Allow the element to grow and take up available space */
+            flex-basis: 0; /* Reset the initial basis value */
+        }
+
+    }
 }
