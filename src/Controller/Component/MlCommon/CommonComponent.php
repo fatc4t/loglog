@@ -1433,13 +1433,14 @@ class CommonComponent
             $sqlInsert .= "
             INSERT INTO rooms (shop_cd, user_cd)
             SELECT '" . $shop_cd . "', user_cd FROM mst0011
-            WHERE user_cd NOT IN (SELECT user_cd FROM rooms WHERE shop_cd = '" . $shop_cd . "')";
-            //print_r("-----createRoomNewUsers");exit;
-            // SQLの実行
-            $connection->query($sqlInsert)->fetchAll('assoc');
+            WHERE user_cd NOT IN (SELECT user_cd FROM rooms WHERE shop_cd = '" . $shop_cd . "') ";
+
+            // SQLの実行            
+            $connection->execute($sqlInsert);
+            $connection->commit();
         } catch (Exception $e) {
             $this->Flash->error($e);
-            $connection->rollback();
+            $connection->rollback();    
         }
     }
 
@@ -1448,7 +1449,7 @@ class CommonComponent
      * KARL 2023/02
      * @return void
      */
-    public static function announceMessage($shop_cd, $msgContent)
+    public static function announceMessage($shop_cd, $msgContent, $whereList=null)
     {
 
         $connection = ConnectionManager::get('default');
@@ -1457,14 +1458,19 @@ class CommonComponent
             $sqlInsert = "";
             $sqlInsert .= "
             INSERT INTO messages (room_id, user_cd, shop_cd, datesent, content, seen, sender)
-            SELECT r.room_id, r.user_cd, r.shop_cd , NOW(), '" . $msgContent . "', '0', 'shop'
+            SELECT r.room_id, m.user_cd, r.shop_cd , NOW(), '" . $msgContent . "', '0', 'shop'
             FROM rooms r
-            WHERE r.shop_cd = '" . $shop_cd . "'";
-
-
+            left join mst0011 m on m.user_cd = r.user_cd
+            WHERE r.shop_cd = '" . $shop_cd . "' "; 
+            
+            if($whereList !==null){
+                $sqlInsert .= " AND ".$whereList;
+            }
+            
 
             // SQLの実行
-            $connection->query($sqlInsert)->fetchAll('assoc');
+            $connection->execute($sqlInsert);
+            $connection->commit();
         } catch (Exception $e) {
             $this->Flash->error($e);
             $connection->rollback();
@@ -1793,6 +1799,8 @@ class CommonComponent
                         '" . $searchParam['rank'] . "',
                         '" . $searchParam['visit_condition'] . "'
                         )";
+                
+                
 
                 $connection->query($sql)->fetchAll('assoc');
 
@@ -2130,6 +2138,8 @@ class CommonComponent
         // トランザクション
         $connection = ConnectionManager::get('default');
 
+        
+
         if ($where) {
             $where = " where " . $where;
         }
@@ -2137,8 +2147,15 @@ class CommonComponent
             // UPDATE mst0013
             if($table === "mst0013"){
             $sql  = " UPDATE public." . $table . " SET ";
-            $sql .= "msg_text             = '".$searchParam['msg_text']."', ";
-            $sql .= "updatetime          = now() ";
+            $sql .= "msg_text               = '".$searchParam['msg_text']."', ";
+            $sql .= "thumbnail1         = '".$searchParam['thumbnail1']."', ";
+            $sql .= "updatetime             = now(), ";
+            $sql .= "prefecture             = '".$searchParam['prefecture']."', ";
+            $sql .= "age                    = '".$searchParam['age']."', ";
+            $sql .= "gender                 = '".$searchParam['gender']."', ";
+            $sql .= "birthday               = '".$searchParam['birthday']."', ";
+            $sql .= "rank                   = '".$searchParam['rank']."' ";
+  
 
             $sql .= " " . $where . " ";
 
@@ -2157,6 +2174,30 @@ class CommonComponent
         } catch (Exception $e) {
             $this->Flash->error($e);
             $connection->rollback();
+        }
+    }
+
+    /**
+     *  ユーザーデータ (GET)
+     * @param user_cd
+     * @return userData
+     */
+    public static function getUserData($user_cd)
+    {
+        try{
+        $connection = ConnectionManager::get('default');
+        // 条件
+
+        $sql   = "";
+        $sql   .= " SELECT * FROM mst0011 WHERE user_cd='".$user_cd."'";
+       
+        // SQLの実行
+        $query = $connection->query($sql)->fetchAll('assoc');
+
+        return $query;
+
+        }catch (Exception $e) {
+            $this->Flash->error($e);
         }
     }
 

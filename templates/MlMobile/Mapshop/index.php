@@ -25,15 +25,15 @@
             <div class="tabs">
                 <?php if ($shop_data[0]['thumbnail1'] != "") { ?>
                     <input id="all" type="radio" name="tab_item" checked hidden>
-                    
+
                 <?php } ?>
                 <?php if ($shop_data[0]['thumbnail2'] != "") { ?>
                     <input id="programming" type="radio" name="tab_item" hidden>
-                   
+
                 <?php } ?>
                 <?php if ($shop_data[0]['thumbnail3'] != "") { ?>
                     <input id="design" type="radio" name="tab_item" hidden>
-                    
+
                 <?php } ?>
 
                 <div class="tab_content" id="all_content">

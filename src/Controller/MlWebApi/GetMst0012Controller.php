@@ -70,7 +70,11 @@ class GetMst0012Controller extends AppController
             mst0010.shop_nm, mst0010.category_cd, 
             coupons.coupon_goods, coupons.effect_srt, coupons.effect_end, coupons.coupon_discount, 
             mst0010.thumbnail1 as shopimage, coupons.thumbnail1, coupons.thumbnail2, coupons.thumbnail3, coupons.connect_kbn, 
-            coupons.color, 
+            coupons.color,
+            coupons.prefecture, 
+            coupons.age, 
+            coupons.gender,
+            coupons.rank,  
             coupons.visit_condition, 
             (ABS(GEO.longtitude::FLOAT-ABS(" . $long . "))+ABS(GEO.latitude::FLOAT-ABS(" . $lat . "))) as proximity 
             from " . $table . " 
@@ -137,12 +141,14 @@ class GetMst0012Controller extends AppController
         $sql   .= " count(shop_cd) from trn0012 where shop_cd='" . $shop_cd . "' and user_cd='" . $user_cd . "' ";
         $sql   .= " and to_char(raiten_time,'YYYYMMDD') >= '" . $dateStart . "' and to_char(raiten_time,'YYYYMMDD') <= '" . $dateEnd . "' ";
 
-        //print_r($sql);exit;
+
         // SQLの実行
         $query = $connection->query($sql)->fetchAll('assoc');
 
         return $query;
     }
+
+
 
 
     public function index($user_cd = null, $long = null, $lat = null)
@@ -155,25 +161,85 @@ class GetMst0012Controller extends AppController
         $long = $this->request->getQuery('long');
         $lat = $this->request->getQuery('lat');
 
-        $couponData = '';
+        $couponData =   '';
+        $userData   =   '';
         // Couponデータ
         $couponData =  $this->prGetCouponData('coupons', $user_cd, $lat, $long);
+        $userData   =  $common->getuserData($user_cd);
 
 
-        $EffectS = '';
-        $EffectE = '';
-        $visitC = '';
-        $shop_cd = '';
+        //来店条件
+        $EffectS        = '';
+        $EffectE        = '';
+        $visitC         = '';
+        $shop_cd        = '';
+
+        //クーポン条件
+        $prefecture     = '';
+        $gender         = '';
+        $rank           = '';
+        $age            = '';
+        $ageList        = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+        $userYear       = '';
+        $currYear       = '';
+        $userAge        = '';
+
+
+        $userYear = substr($userData[0]['birthday'], 0, 4);
+        $currYear = date('Y');
+        $userAge = (int)$currYear - (int)$userYear;
 
 
 
         //$key = index
         foreach ($couponData as $key => $cpData) {
+
+            //来店条件
             $visitC     = $cpData['visit_condition'];
             $EffectS    = $cpData['effect_srt'];
             $EffectE    = $cpData['effect_end'];
             $shop_cd    = $cpData['shop_cd'];
 
+
+            //他の条件
+            $prefecture     = $cpData['prefecture'];
+            $age            = (int)$cpData['age'];
+            $gender         = $cpData['gender'];
+            $rank           = $cpData['rank'];
+
+            //-----------------------------------------------
+
+            //クーポン 都道府県
+            if ($prefecture) {
+                if ($gender !== $userData[0]['add1']) {
+                    unset($couponData[$key]);
+                }
+            }
+
+            //クーポン 年齢
+            if ($age) {
+                foreach ($ageList as &$ages) {
+                    $ages += $age;
+                }
+                if(!in_array($userAge, $ageList)) {
+                    unset($couponData[$key]);
+                }
+            }
+
+            //クーポン 性別
+            if ($gender) {
+                if ($gender !== $userData[0]['gender']) {
+                    unset($couponData[$key]);
+                }
+            }
+
+            //クーポン ランク
+            if ($rank) {
+                if ($gender !== $userData[0]['rank']) {
+                    unset($couponData[$key]);
+                }
+            }
 
 
             if ($visitC !== '' || $visitC !== NULL) {
@@ -183,14 +249,14 @@ class GetMst0012Controller extends AppController
                 //if  count < visitC -> HIDE
                 //charvar -> intに変更して
                 if ((int)$countCheck[0]['count'] < (int)$visitC) {
-                    //delete record
                     unset($couponData[$key]);
                 }
                 //if  count >= visitC -> そのまま
-
             }
         }
 
+        
+        //JSONフォーマットに整理
         foreach ($couponData as $data) {
             //arrange coupon here データ整理する
             $aryAddRow =  array(

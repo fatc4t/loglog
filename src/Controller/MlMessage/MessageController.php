@@ -199,8 +199,10 @@ class MessageController extends AppController
             if ($searchParam['btn_click_name'] == CON_SAVE_IN) {
 
                 $whereU = " 1 = 1";
+                $whereMessageParam = " 1 = 1";
                 if ($searchParam['user_add']) {
                     $whereU .= " and add1 like '%" . $searchParam['user_add'] . "%' ";
+                    $whereMessageParam .= " and m.add1 like '%" . $searchParam['user_add'] . "%' ";
                 }
 
                 if ($searchParam['age']) {
@@ -221,18 +223,20 @@ class MessageController extends AppController
                     $year_list1 .= ")";
 
                     $whereU    .= " and substr(birthday,0,5) in " . $year_list1;
+                    $whereMessageParam    .= " and substr(m.birthday,0,5) in " . $year_list1;
                 }
                 if ($searchParam['birth_month']) {
                     $whereU .= " and substr(birthday,5,2 )  = '" . $searchParam['birth_month'] . "'";
+                    $whereMessageParam .= " and substr(m.birthday,5,2 )  = '" . $searchParam['birth_month'] . "'";
                 }
                 if ($searchParam['gender']) {
                     $whereU .= " and gender = '" . $searchParam['gender'] . "' ";
+                    $whereMessageParam .= " and m.gender = '" . $searchParam['gender'] . "' ";
                 }
 
                 // 対象のユーザーを取得する
                 $user_data = $common->prGetData("mst0011", $whereU, NULL, NULL);
                 $this->set(compact('user_data'));
-
 
                 $msg_cd_1 = sprintf("%06d", $msg_data[0]['msg_cd']);
 
@@ -278,8 +282,12 @@ class MessageController extends AppController
                 }
 
 
+                $msgCDchecker = $this->request->getQuery('msg_cd'); //check 新メッセージか更新か
+                
 
-                if(!$msg_cd){ 
+                if(!$msgCDchecker){ 
+
+                
                 //　登録する
                 $common->prSavedata("mst0013", $searchParam); //1 INSERT in mst0013 ONLY
 
@@ -291,10 +299,12 @@ class MessageController extends AppController
                 $common->createRoomNewUsers($shop_cd); //uncomment for PROD
 
                 //PUT content to messagesテーブル
-                $common->announceMessage($shop_cd, $msgContent);
+                $common->announceMessage($shop_cd, $msgContent, $whereMessageParam);
                 
                 }else{
                     //UPDATE - 更新
+                    //print_r($searchParam);exit;
+
                     $prevMSGtext = $msg_data[0]['msg_text'];
                     $whereUpdateMst0013 = "";
                     $whereUpdateMessages = "";
@@ -304,7 +314,7 @@ class MessageController extends AppController
                     $common->updateMessages('mst0013', $searchParam, $whereUpdateMst0013);
                     $common->updateMessages('messages', $searchParam, $whereUpdateMessages);
 
-                    exit;
+                    
                 }
 
                 return $this->redirect(

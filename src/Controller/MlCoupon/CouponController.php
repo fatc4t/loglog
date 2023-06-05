@@ -183,7 +183,7 @@ class CouponController extends AppController
             $this->set(compact('searchParam'));
 
 
-            //if ($shop_data[0]['paidmember'] == 0) { //conditions not shown(FREE USER)
+            if ($shop_data[0]['paidmember'] == 0) { //conditions not shown(FREE USER)
             $searchParam['user_add']    = "";
             $searchParam['age']         = "";
             $searchParam['birth_month'] = "";
@@ -191,7 +191,7 @@ class CouponController extends AppController
             $searchParam['background']  = "";
             $searchParam['color']       = "";
             $searchParam['rank']       = "";
-            //}
+            }
             
             $searchParam['thumbnail1'] = "";
             $searchParam['thumbnail2'] = "";
@@ -244,18 +244,12 @@ class CouponController extends AppController
                 $user_data = $common->prGetData("mst0011", $whereU, NULL, NULL);
                 $this->set(compact('user_data'));
 
-
-
-                
-
-
+    
 
                 if (!$couponChecker) { //----If NULL-> INSERT DB
                    
 
                     if ($shop_data[0]['paidmember'] == 0) { //--free member
-
-
 
                         $searchParam['insuser_cd']   = $shop_cd;
                         $searchParam['insdatetime']  = "now()";
@@ -277,6 +271,7 @@ class CouponController extends AppController
                         $searchParam['background']   = "#ffffff";
                         $searchParam['color']        = "696969";
 
+                        print_r($searchParam);exit;
 
                         $unique_cp_valArr = $common->insertNEWCouponData("coupons", $searchParam, 0); //0 for FREE member(paidmemberchecker)
                         $unique_cp_val = $unique_cp_valArr[0]['currval'];
@@ -331,15 +326,15 @@ class CouponController extends AppController
                         $searchParam['birthday']     = $searchParam['birth_month'];
                         $searchParam['rank']         = $searchParam['rank'];
 
+                       
 
                         //　登録する---INSERT
-                        //$common->insertCouponData("mst0012", $searchParam, 1);   //OLD SHIT
-
                         $unique_cp_valArr = $common->insertNEWCouponData("coupons", $searchParam, 1);  //1 for PAID member(paidmemberchecker)
                         $unique_cp_val = $unique_cp_valArr[0]['currval'];
 
                         //------------------------------------------------THUMBNAIL---------------------------------------------------------------------
                         // 写真保存用のパスを設定する -------------if EDIT (unique_coupon_cd あり)
+
                         //path for IMAGE
                         $path    = CON_CPN_IMAGE . $shop_cd . '/' . $unique_cp_val;
 
